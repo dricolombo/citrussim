@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CítrusSim — Motor de Cálculo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --verde-escuro: #1a4a2e; --verde-medio: #2d6b45; --verde-claro: #4a9463;
+      --laranja: #e8710a; --laranja-claro: #f59332; --amarelo: #f7c844;
+      --creme: #fdf6e8; --fundo: #f2efe8; --branco: #ffffff;
+      --texto: #1a2e1a; --texto-suave: #5a7060; --borda: #e2ddd4;
+      --vermelho: #dc2626; --azul: #2563eb;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',sans-serif; background:var(--fundo); color:var(--texto); }
+
+    .header {
+      background:var(--verde-escuro); height:60px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 28px; box-shadow:0 2px 12px rgba(0,0,0,0.25);
+    }
+    .header-logo { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--creme); }
+    .header-logo span { color:var(--laranja-claro); }
+    .header-tag { background:var(--laranja); color:white; font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; }
+
+    .container { max-width:1100px; margin:0 auto; padding:32px 24px; }
+
+    .pag-titulo { font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--verde-escuro); margin-bottom:6px; }
+    .pag-sub { font-size:14px; color:var(--texto-suave); margin-bottom:32px; }
+
+    /* ABAS DE DEMONSTRAÇÃO */
+    .tabs { display:flex; gap:4px; margin-bottom:24px; background:var(--branco); padding:6px; border-radius:12px; border:1px solid var(--borda); width:fit-content; }
+    .tab-btn {
+      padding:8px 20px; border-radius:8px; border:none;
+      font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+      cursor:pointer; color:var(--texto-suave); background:transparent; transition:all 0.15s;
+    }
+    .tab-btn.ativo { background:var(--verde-escuro); color:var(--creme); }
+    .tab-btn:hover:not(.ativo) { background:var(--fundo); }
+    .painel { display:none; }
+    .painel.ativo { display:block; animation:fadeIn 0.2s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+    /* CARDS */
+    .card { background:var(--branco); border-radius:14px; padding:24px; border:1px solid var(--borda); margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+    .card-titulo { font-size:15px; font-weight:700; color:var(--verde-escuro); margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--fundo); display:flex; align-items:center; gap:8px; }
+
+    /* FORMULÁRIO DE ENTRADA */
+    .entrada-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
+    .form-grupo { display:flex; flex-direction:column; gap:5px; }
+    .form-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--texto-suave); }
+    .form-input, .form-select {
+      padding:10px 13px; border:2px solid var(--borda); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:14px; color:var(--texto);
+      background:var(--branco); outline:none; transition:border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus { border-color:var(--verde-medio); }
+    .form-hint { font-size:11px; color:#bbb; }
+
+    .btn-calcular {
+      width:100%; padding:14px; background:var(--verde-escuro); color:var(--creme);
+      border:none; border-radius:10px; font-family:'DM Sans',sans-serif;
+      font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s;
+      position:relative; overflow:hidden;
+    }
+    .btn-calcular::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--laranja),var(--laranja-claro)); opacity:0; transition:opacity 0.3s; }
+    .btn-calcular:hover::before { opacity:1; }
+    .btn-calcular:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(232,113,10,0.3); }
+    .btn-calcular span { position:relative; z-index:1; }
+
+    /* RESULTADO — DRE */
+    .dre-table { width:100%; border-collapse:collapse; font-size:14px; }
+    .dre-table td { padding:10px 14px; border-bottom:1px solid var(--fundo); }
+    .dre-table tr:last-child td { border-bottom:none; }
+    .dre-table .linha-label { color:var(--texto-suave); }
+    .dre-table .linha-valor { text-align:right; font-weight:600; font-family:'DM Sans',sans-serif; }
+    .dre-table .linha-total td { background:var(--fundo); font-weight:700; }
+    .dre-table .linha-destaque td { background:#edf7f0; font-weight:700; color:var(--verde-escuro); font-size:15px; }
+    .dre-table .linha-negativo .linha-valor { color:var(--vermelho); }
+    .dre-table .linha-positivo .linha-valor { color:var(--verde-medio); }
+    .dre-table .subtitulo td { background:#f8f8f5; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#aaa; padding:8px 14px; }
+    .dre-sinal { font-size:12px; color:#aaa; margin-right:4px; }
+
+    /* INDICADORES RESULTADO */
+    .resultado-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+    .res-card {
+      background:var(--branco); border-radius:12px; padding:18px;
+      border:1px solid var(--borda); text-align:center;
+    }
+    .res-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--texto-suave); margin-bottom:6px; }
+    .res-valor { font-family:'Playfair Display',serif; font-size:24px; font-weight:700; line-height:1; margin-bottom:4px; }
+    .res-status { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; display:inline-block; }
+    .s-verde { background:#dcfce7; color:#166534; }
+    .s-amarelo { background:#fef9c3; color:#854d0e; }
+    .s-vermelho { background:#fee2e2; color:#991b1b; }
+
+    /* ALERTA */
+    .alerta { display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; line-height:1.5; }
+    .alerta.aviso  { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
+    .alerta.info   { background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; }
+    .alerta.sucesso{ background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; }
+    .alerta.perigo { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+
+    /* TABELA COMPARATIVA */
+    .comp-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .comp-table th { padding:10px 12px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#999; border-bottom:2px solid var(--fundo); text-align:left; }
+    .comp-table td { padding:10px 12px; border-bottom:1px solid var(--fundo); vertical-align:middle; }
+    .comp-table tr:hover td { background:#fafaf8; }
+    .celula-cor { padding:5px 10px; border-radius:6px; font-size:12px; font-weight:600; text-align:center; display:inline-block; min-width:70px; }
+    .c-verde  { background:#dcfce7; color:#166534; }
+    .c-amarelo{ background:#fef9c3; color:#854d0e; }
+    .c-vermelho{background:#fee2e2; color:#991b1b; }
+    .c-azul   { background:#dbeafe; color:#1e40af; }
+
+    /* IDC VISUAL */
+    .idc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .idc-comp {
+      background:var(--fundo); border-radius:10px; padding:16px;
+      border-left:4px solid var(--verde-claro);
+    }
+    .idc-comp-nome { font-size:12px; font-weight:700; color:var(--verde-escuro); margin-bottom:4px; }
+    .idc-comp-peso { font-size:11px; color:var(--texto-suave); margin-bottom:8px; }
+    .idc-barra-wrap { height:8px; background:#e5e7eb; border-radius:4px; }
+    .idc-barra { height:8px; border-radius:4px; transition:width 1s ease; }
+    .idc-pontos { font-size:13px; font-weight:700; color:var(--verde-escuro); margin-top:6px; text-align:right; }
+
+    /* ETAPAS DO PROCESSAMENTO */
+    .etapas { display:flex; flex-direction:column; gap:8px; }
+    .etapa {
+      display:flex; align-items:center; gap:14px;
+      padding:12px 16px; border-radius:10px;
+      background:var(--fundo); border:1px solid var(--borda);
+      font-size:13px; transition:all 0.3s;
+    }
+    .etapa.concluida { background:#f0fdf4; border-color:#bbf7d0; }
+    .etapa.processando { background:#eff6ff; border-color:#bfdbfe; animation:pulso 1s ease-in-out infinite; }
+    @keyframes pulso { 0%,100%{opacity:1} 50%{opacity:0.7} }
+    .etapa-num {
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; flex-shrink:0;
+      background:#e5e7eb; color:#6b7280;
+    }
+    .etapa.concluida .etapa-num { background:#dcfce7; color:#166534; }
+    .etapa.processando .etapa-num { background:#dbeafe; color:#1e40af; }
+    .etapa-info { flex:1; }
+    .etapa-titulo { font-weight:600; color:var(--texto); }
+    .etapa-desc { font-size:11px; color:var(--texto-suave); margin-top:2px; }
+    .etapa-status { font-size:11px; font-weight:700; }
+    .etapa.concluida .etapa-status { color:#166534; }
+    .etapa.processando .etapa-status { color:#1e40af; }
+
+    .separador { height:1px; background:var(--borda); margin:24px 0; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">Cítrus<span>Sim</span></div>
+  <span class="header-tag">⚙️ Motor de Cálculo</span>
+</header>
+
+<div class="container">
+  <div class="pag-titulo">⚙️ Motor de Cálculo</div>
+  <div class="pag-sub">Insira as decisões de uma equipe e veja o cálculo completo em tempo real — DRE, fluxo de caixa, reputação e IDC</div>
+
+  <!-- ABAS -->
+  <div class="tabs">
+    <button class="tab-btn ativo" onclick="trocarTab('simulador', this)">🧮 Simulador</button>
+    <button class="tab-btn" onclick="trocarTab('processamento', this)">⚙️ Processamento</button>
+    <button class="tab-btn" onclick="trocarTab('comparativo', this)">📊 Comparativo</button>
+    <button class="tab-btn" onclick="trocarTab('idc', this)">🏆 IDC</button>
+  </div>
+
+  <!-- ════════════════════════════════
+       PAINEL 1 — SIMULADOR
+  ════════════════════════════════ -->
+  <div class="painel ativo" id="tab-simulador">
+
+    <div class="card">
+      <div class="card-titulo">📋 Decisões da Equipe — Rodada 1</div>
+
+      <div class="entrada-grid">
+        <div class="form-grupo">
+          <label class="form-label">Cooperativa</label>
+          <select class="form-select" id="inp-coop">
+            <option>Cooperativa Horizonte Verde</option>
+            <option>Cooperativa Sol do Campo</option>
+            <option>Cooperativa Vale Citrícola</option>
+            <option>Cooperativa Jales Agroindustrial</option>
+            <option>Cooperativa Terra Frutífera</option>
+            <option>Cooperativa Noroeste Paulista</option>
+            <option>Cooperativa Citrus Premium</option>
+            <option>Cooperativa Campo Aberto</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Laranja a comprar (cx)</label>
+          <input class="form-input" type="number" id="inp-compra" value="500" min="0"/>
+          <span class="form-hint">Preço R$18/cx · Cap. 600cx</span>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Pagamento das compras</label>
+          <select class="form-select" id="inp-pagto">
+            <option value="AV">À vista (5% desconto)</option>
+            <option value="AP">A prazo</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Market share desejado (%)</label>
+          <input class="form-input" type="number" id="inp-ms" value="15" min="1" max="100"/>
+          <span class="form-hint">Mercado total: 6.400 cx</span>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Preço de venda (R$/cx)</label>
+          <input class="form-input" type="number" id="inp-preco" value="44" min="1"/>
+          <span class="form-hint">Referência: R$42/cx</span>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Tipo de recebimento</label>
+          <select class="form-select" id="inp-receb">
+            <option value="AV">À vista (100%)</option>
+            <option value="AP">A prazo (próx. rodada)</option>
+            <option value="2x">Parcelado 2x</option>
+            <option value="3x">Parcelado 3x</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Investimento em marketing</label>
+          <select class="form-select" id="inp-mkt">
+            <option value="0">Sem investimento</option>
+            <option value="500">Nível 1 — R$500</option>
+            <option value="2000" selected>Nível 2 — R$2.000</option>
+            <option value="5000">Nível 3 — R$5.000</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Contratar (+) / Demitir (−)</label>
+          <input class="form-input" type="number" id="inp-rh" value="0" min="-10" max="10"/>
+          <span class="form-hint">Atual: 6 func. · Contrat: R$2.700 · Demis: R$3.600</span>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Treinamento</label>
+          <select class="form-select" id="inp-treino">
+            <option value="NAO">Não treinar</option>
+            <option value="OP">Operacional (+15%)</option>
+            <option value="COM">Comercial</option>
+            <option value="QUA">Qualidade</option>
+            <option value="GES">Gestão</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Investimento P&D (R$)</label>
+          <input class="form-input" type="number" id="inp-pd" value="0" min="0"/>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Evento externo desta rodada</label>
+          <select class="form-select" id="inp-evento">
+            <option value="nenhum">Nenhum evento</option>
+            <option value="geada_mod">Geada — Moderado (+15% laranja)</option>
+            <option value="geada_sev">Geada — Severo (+30% laranja)</option>
+            <option value="demanda_mod">Alta demanda — Moderado (+10% mercado)</option>
+            <option value="juros_mod">Alta Selic — Moderado (+1% juros)</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Caixa inicial (R$)</label>
+          <input class="form-input" type="number" id="inp-caixa" value="50000"/>
+        </div>
+      </div>
+
+      <button class="btn-calcular" onclick="calcular()">
+        <span>⚙️ Calcular resultados da rodada →</span>
+      </button>
+    </div>
+
+    <!-- RESULTADO -->
+    <div id="resultado-area" style="display:none">
+
+      <div class="resultado-grid" id="res-indicadores"></div>
+
+      <div class="card">
+        <div class="card-titulo">📊 Demonstração do Resultado do Exercício (DRE)</div>
+        <table class="dre-table" id="dre-table"></table>
+      </div>
+
+      <div class="card">
+        <div class="card-titulo">💧 Fluxo de Caixa Direto</div>
+        <table class="dre-table" id="fc-table"></table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       PAINEL 2 — PROCESSAMENTO
+  ════════════════════════════════ -->
+  <div class="painel" id="tab-processamento">
+    <div class="card">
+      <div class="card-titulo">🔄 15 Etapas do Processamento de uma Rodada</div>
+      <p style="font-size:13px;color:var(--texto-suave);margin-bottom:20px;">Esta é a ordem exata em que o sistema processa cada rodada, garantindo consistência nos cálculos.</p>
+      <div class="etapas" id="etapas-lista"></div>
+      <br/>
+      <button class="btn-calcular" onclick="simularProcessamento()">
+        <span>▶️ Simular processamento de uma rodada</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       PAINEL 3 — COMPARATIVO
+  ════════════════════════════════ -->
+  <div class="painel" id="tab-comparativo">
+    <div class="card">
+      <div class="card-titulo">📊 Comparativo entre Cooperativas — Rodada 1</div>
+      <p style="font-size:13px;color:var(--texto-suave);margin-bottom:20px;">Após calcular diferentes cenários no Simulador, compare os resultados lado a lado.</p>
+      <table class="comp-table" id="comp-table">
+        <thead>
+          <tr>
+            <th>Cooperativa</th>
+            <th>Receita Bruta</th>
+            <th>Lucro Líquido</th>
+            <th>Margem</th>
+            <th>Caixa Final</th>
+            <th>Reputação</th>
+            <th>IDC Parcial</th>
+          </tr>
+        </thead>
+        <tbody id="comp-tbody"></tbody>
+      </table>
+    </div>
+    <div class="alerta info">
+      <span>💡</span>
+      <div>Use o Simulador para calcular cada equipe e os resultados aparecerão automaticamente nesta tabela.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       PAINEL 4 — IDC
+  ════════════════════════════════ -->
+  <div class="painel" id="tab-idc">
+    <div class="card">
+      <div class="card-titulo">🏆 Cálculo do IDC — Índice de Desempenho Cooperativo</div>
+      <p style="font-size:13px;color:var(--texto-suave);margin-bottom:20px;">O IDC é calculado automaticamente após cada rodada. Calcule uma equipe no Simulador para ver o detalhamento.</p>
+      <div class="idc-grid" id="idc-grid">
+        <!-- preenchido depois do cálculo -->
+      </div>
+      <div id="idc-vazio" style="text-align:center;padding:40px;color:var(--texto-suave);">
+        <div style="font-size:48px;margin-bottom:12px;">🏆</div>
+        <div style="font-size:15px;">Calcule uma equipe no Simulador para ver o IDC detalhado.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ══════════════════════════════════════════════════════
+// PARÂMETROS DO JOGO (espelham a Planilha Mestre)
+// ══════════════════════════════════════════════════════
+const P = {
+  precoLaranja:    18.00,
+  descontoAV:      0.05,
+  impostos:        0.12,
+  ir:              0.15,
+  custosFixos:     13800,  // folha + energia fixa
+  energiaVar:      1.50,   // por caixa
+  salarioBase:     1800,
+  custoContratar:  2700,
+  custoDemitir:    3600,
+  armazenagem:     0.02,   // % do valor do estoque por rodada
+  mercadoTotal:    6400,
+  repInicial:      50,
+
+  // Custo processamento por faixa (cx)
+  procFaixa: [
+    { ate:500,  custo:5.50 },
+    { ate:1000, custo:4.50 },
+    { ate:2000, custo:3.80 },
+    { ate:99999,custo:3.20 },
+  ],
+  // Custo embalagem por faixa
+  embalFaixa: [
+    { ate:500,  custo:3.00 },
+    { ate:1000, custo:2.50 },
+    { ate:2000, custo:2.20 },
+    { ate:99999,custo:2.00 },
+  ],
+};
+
+// Eventos externos
+const EVENTOS = {
+  nenhum:     { precoLaranja: 0, mercado: 0 },
+  geada_mod:  { precoLaranja: 0.15, mercado: 0 },
+  geada_sev:  { precoLaranja: 0.30, mercado: 0 },
+  demanda_mod:{ precoLaranja: 0, mercado: 0.10 },
+  juros_mod:  { precoLaranja: 0, mercado: 0 },
+};
+
+// Histórico de resultados calculados (para o comparativo)
+let historico = [];
+
+// ══════════════════════════════════════════════════════
+// FUNÇÕES DE CÁLCULO
+// ══════════════════════════════════════════════════════
+
+function custoProcEmbal(qtd) {
+  // Retorna custo total de processamento + embalagem por caixa (escalonado)
+  let proc = 0, embal = 0;
+  for(let f of P.procFaixa)  { if(qtd<=f.ate){ proc=f.custo; break; } }
+  for(let f of P.embalFaixa) { if(qtd<=f.ate){ embal=f.custo; break; } }
+  return proc + embal;
+}
+
+function calcularReputacao(dados) {
+  let delta = 0;
+  const { vendido, capacidade, marketing, treino, rh, funcAtual } = dados;
+
+  // Ruptura de estoque
+  if(vendido < capacidade * 0.5) delta -= 10;
+
+  // Marketing
+  const mktMap = { '0':0, '500':1, '2000':3, '5000':6 };
+  delta += mktMap[String(marketing)] || 0;
+
+  // Treinamento
+  if(treino !== 'NAO') delta += 4;
+
+  // Demissão em massa (>30% do quadro)
+  if(rh < 0 && Math.abs(rh) / funcAtual > 0.30) delta -= 8;
+
+  return delta;
+}
+
+function calcularIDC(r) {
+  // IDC = 26% Fin + 21% Saúde + 17% Estoque + 21% Rep + 10% Inovação + 5% Missão
+  const finScore    = Math.max(0, Math.min(100, 50 + (r.margemLiq * 2)));
+  const saudeScore  = r.caixaFinal >= 0 ? Math.min(100, (r.caixaFinal / 50000) * 100) : 0;
+  const estoqueScore= r.vendido > 0 ? Math.min(100, (r.vendido / r.capacidade) * 100) : 50;
+  const repScore    = Math.max(0, Math.min(100, r.repFinal));
+  const inovScore   = r.pd > 0 ? 60 : 20;
+  const missaoScore = 50; // base
+
+  const idc =
+    finScore    * 0.26 +
+    saudeScore  * 0.21 +
+    estoqueScore* 0.17 +
+    repScore    * 0.21 +
+    inovScore   * 0.10 +
+    missaoScore * 0.05;
+
+  return {
+    total: idc,
+    componentes: [
+      { nome:'Resultado Financeiro', peso:'26%', score:finScore,    pontos: finScore*0.26 },
+      { nome:'Saúde Financeira',     peso:'21%', score:saudeScore,  pontos: saudeScore*0.21 },
+      { nome:'Gestão de Estoque',    peso:'17%', score:estoqueScore,pontos: estoqueScore*0.17 },
+      { nome:'Reputação',            peso:'21%', score:repScore,    pontos: repScore*0.21 },
+      { nome:'Inovação / P&D',       peso:'10%', score:inovScore,   pontos: inovScore*0.10 },
+      { nome:'Missões Pedagógicas',  peso:'5%',  score:missaoScore, pontos: missaoScore*0.05 },
+    ]
+  };
+}
+
+function calcular() {
+  // ── 1. LER ENTRADAS ──
+  const compra   = parseFloat(document.getElementById('inp-compra').value) || 0;
+  const pagto    = document.getElementById('inp-pagto').value;
+  const ms       = parseFloat(document.getElementById('inp-ms').value) / 100 || 0.15;
+  const preco    = parseFloat(document.getElementById('inp-preco').value) || 42;
+  const receb    = document.getElementById('inp-receb').value;
+  const mkt      = parseFloat(document.getElementById('inp-mkt').value) || 0;
+  const rh       = parseInt(document.getElementById('inp-rh').value) || 0;
+  const treino   = document.getElementById('inp-treino').value;
+  const pd       = parseFloat(document.getElementById('inp-pd').value) || 0;
+  const evento   = document.getElementById('inp-evento').value;
+  const caixaIni = parseFloat(document.getElementById('inp-caixa').value) || 50000;
+  const coop     = document.getElementById('inp-coop').value;
+
+  // ── 2. APLICAR EVENTO ──
+  const ev = EVENTOS[evento] || EVENTOS.nenhum;
+  const precoLaranjEv = P.precoLaranja * (1 + ev.precoLaranja);
+  const mercadoEv     = Math.round(P.mercadoTotal * (1 + ev.mercado));
+
+  // ── 3. PROCESSAR COMPRAS ──
+  const descontoCompra = pagto === 'AV' ? precoLaranjEv * P.descontoAV : 0;
+  const precoLiqLaranja = precoLaranjEv - descontoCompra;
+  const custoCompra    = compra * precoLiqLaranja;
+
+  // ── 4. CALCULAR CAPACIDADE E PRODUÇÃO ──
+  const funcAtual   = 6; // inicial
+  const funcNovo    = funcAtual + rh;
+  const prodBase    = funcNovo * 100;
+  const bonusTreino = treino === 'OP' ? 0.15 : 0;
+  const capacidade  = Math.round(prodBase * (1 + bonusTreino));
+  const produzido   = Math.min(compra, capacidade);
+
+  // ── 5. CALCULAR VENDAS ──
+  const volumeMercado = Math.round(mercadoEv * ms);
+  const vendido       = Math.min(produzido, volumeMercado);
+
+  // ── 6. DRE ──
+  const receitaBruta = vendido * preco;
+  const impostos     = receitaBruta * P.impostos;
+  const receitaLiq   = receitaBruta - impostos;
+
+  // CMV escalonado
+  const custoUnitario   = precoLiqLaranja + custoProcEmbal(vendido);
+  const cmv             = vendido * custoUnitario;
+  const lucroBruto      = receitaLiq - cmv;
+
+  // Despesas operacionais
+  const folha      = funcNovo * P.salarioBase;
+  const energiaFix = 3000;
+  const energiaVar = produzido * P.energiaVar;
+  const custoRH    = rh > 0 ? rh * P.custoContratar : rh < 0 ? Math.abs(rh) * P.custoDemitir : 0;
+  const estoqueRestante = Math.max(0, produzido - vendido);
+  const armazenagem = estoqueRestante * custoUnitario * P.armazenagem;
+  const despesasOp  = folha + energiaFix + energiaVar + mkt + custoRH + pd + armazenagem;
+
+  const ebit       = lucroBruto - despesasOp;
+  const ir         = ebit > 0 ? ebit * P.ir : 0;
+  const lucroLiq   = ebit - ir;
+  const margemLiq  = receitaBruta > 0 ? (lucroLiq / receitaBruta) * 100 : 0;
+
+  // ── 7. FLUXO DE CAIXA ──
+  // Recebimentos conforme tipo
+  let recebAgoraPerc = receb === 'AV' ? 1.0 : receb === '2x' ? 0.5 : receb === '3x' ? 0.333 : 0;
+  const recebAgora   = receitaBruta * recebAgoraPerc;
+  const pagamentoCompra = pagto === 'AV' ? custoCompra : 0;
+  const saidaFolha   = folha + energiaFix + energiaVar + custoRH;
+  const saidaMktPd   = mkt + pd;
+  const saidaImpostos= impostos + ir;
+  const caixaFinal   = caixaIni + recebAgora - pagamentoCompra - saidaFolha - saidaMktPd - saidaImpostos;
+
+  // ── 8. REPUTAÇÃO ──
+  const deltaRep = calcularReputacao({ vendido, capacidade, marketing: mkt, treino, rh, funcAtual: funcNovo });
+  const repFinal = Math.max(0, Math.min(100, P.repInicial + deltaRep));
+
+  // ── 9. IDC ──
+  const idc = calcularIDC({ margemLiq, caixaFinal, vendido, capacidade, repFinal, pd });
+
+  // ── 10. RENDERIZAR RESULTADOS ──
+  const resultado = {
+    coop, receitaBruta, impostos, receitaLiq, cmv, lucroBruto,
+    despesasOp, ebit, ir, lucroLiq, margemLiq,
+    caixaIni, recebAgora, pagamentoCompra, saidaFolha, saidaMktPd, saidaImpostos, caixaFinal,
+    capacidade, produzido, vendido, deltaRep, repFinal, pd,
+    idc: idc.total, idcComp: idc.componentes
+  };
+
+  renderResultado(resultado);
+  historico.push(resultado);
+  renderComparativo();
+  renderIDC(idc);
+
+  document.getElementById('resultado-area').style.display = 'block';
+  document.getElementById('resultado-area').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function moeda(v) {
+  return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function renderResultado(r) {
+  // Indicadores
+  const statusCaixa = r.caixaFinal >= 30000 ? ['s-verde','✅ Saudável'] : r.caixaFinal >= 0 ? ['s-amarelo','⚠️ Atenção'] : ['s-vermelho','🔴 Insolvente'];
+  const statusMargem = r.margemLiq >= 15 ? ['s-verde','✅ Boa'] : r.margemLiq >= 0 ? ['s-amarelo','⚠️ Baixa'] : ['s-vermelho','🔴 Negativa'];
+
+  document.getElementById('res-indicadores').innerHTML = `
+    <div class="res-card">
+      <div class="res-label">💰 Caixa Final</div>
+      <div class="res-valor" style="color:${r.caixaFinal>=0?'var(--verde-medio)':'var(--vermelho)'};font-size:20px;">${moeda(r.caixaFinal)}</div>
+      <span class="res-status ${statusCaixa[0]}">${statusCaixa[1]}</span>
+    </div>
+    <div class="res-card">
+      <div class="res-label">📈 Lucro Líquido</div>
+      <div class="res-valor" style="color:${r.lucroLiq>=0?'var(--verde-medio)':'var(--vermelho)'};font-size:20px;">${moeda(r.lucroLiq)}</div>
+      <span class="res-status ${r.lucroLiq>=0?'s-verde':'s-vermelho'}">${r.lucroLiq>=0?'✅ Lucro':'🔴 Prejuízo'}</span>
+    </div>
+    <div class="res-card">
+      <div class="res-label">📉 Margem Líquida</div>
+      <div class="res-valor" style="color:var(--verde-escuro)">${r.margemLiq.toFixed(1)}%</div>
+      <span class="res-status ${statusMargem[0]}">${statusMargem[1]}</span>
+    </div>
+    <div class="res-card">
+      <div class="res-label">🏆 IDC Estimado</div>
+      <div class="res-valor" style="color:var(--laranja)">${r.idc.toFixed(1)}</div>
+      <span class="res-status s-amarelo">⭐ Reputação: ${r.repFinal}/100</span>
+    </div>
+  `;
+
+  // DRE
+  const dre = [
+    { tipo:'subtitulo', label:'RECEITA' },
+    { label:'(+) Receita Bruta', valor:r.receitaBruta, classe:'positivo' },
+    { label:'(−) Impostos (12%)', valor:-r.impostos, classe:'negativo' },
+    { tipo:'total', label:'= Receita Líquida', valor:r.receitaLiq },
+    { tipo:'subtitulo', label:'CUSTOS' },
+    { label:'(−) CMV (laranja + proc. + embal.)', valor:-r.cmv, classe:'negativo' },
+    { tipo:'total', label:'= Lucro Bruto', valor:r.lucroBruto },
+    { tipo:'subtitulo', label:'DESPESAS OPERACIONAIS' },
+    { label:'(−) Total Despesas Operacionais', valor:-r.despesasOp, classe:'negativo' },
+    { tipo:'total', label:'= EBIT (Lucro Operacional)', valor:r.ebit },
+    { label:'(−) IR (15%)', valor:-r.ir, classe:'negativo' },
+    { tipo:'destaque', label:'= LUCRO LÍQUIDO', valor:r.lucroLiq },
+    { label:'Margem Líquida', valor:r.margemLiq, pct:true, classe: r.margemLiq>=0?'positivo':'negativo' },
+  ];
+  document.getElementById('dre-table').innerHTML = dre.map(l => {
+    if(l.tipo==='subtitulo') return `<tr class="subtitulo"><td colspan="2">${l.label}</td></tr>`;
+    const cls = l.tipo==='destaque' ? 'linha-destaque' : l.tipo==='total' ? 'linha-total' : l.classe ? 'linha-'+l.classe : '';
+    const val = l.pct ? `${l.valor.toFixed(1)}%` : moeda(l.valor);
+    const cor = l.valor >= 0 ? '' : 'color:var(--vermelho)';
+    return `<tr class="${cls}"><td class="linha-label">${l.label}</td><td class="linha-valor" style="${cor}">${val}</td></tr>`;
+  }).join('');
+
+  // Fluxo de Caixa
+  const fc = [
+    { tipo:'subtitulo', label:'ENTRADAS' },
+    { label:'Saldo inicial do caixa', valor:r.caixaIni, classe:'positivo' },
+    { label:'(+) Recebimentos das vendas (à vista)', valor:r.recebAgora, classe:'positivo' },
+    { tipo:'subtitulo', label:'SAÍDAS' },
+    { label:'(−) Pagamento de compras de laranja', valor:-r.pagamentoCompra, classe:'negativo' },
+    { label:'(−) Folha + energia + custos RH', valor:-r.saidaFolha, classe:'negativo' },
+    { label:'(−) Marketing + P&D', valor:-r.saidaMktPd, classe:'negativo' },
+    { label:'(−) Impostos + IR', valor:-r.saidaImpostos, classe:'negativo' },
+    { tipo:'destaque', label:'= CAIXA FINAL', valor:r.caixaFinal },
+  ];
+  document.getElementById('fc-table').innerHTML = fc.map(l => {
+    if(l.tipo==='subtitulo') return `<tr class="subtitulo"><td colspan="2">${l.label}</td></tr>`;
+    const cls = l.tipo==='destaque' ? 'linha-destaque' : l.tipo==='total' ? 'linha-total' : l.classe ? 'linha-'+l.classe : '';
+    const cor = l.valor < 0 ? 'color:var(--vermelho)' : '';
+    return `<tr class="${cls}"><td class="linha-label">${l.label}</td><td class="linha-valor" style="${cor}">${moeda(l.valor)}</td></tr>`;
+  }).join('');
+}
+
+function renderComparativo() {
+  document.getElementById('comp-tbody').innerHTML = historico.map(r => {
+    const corMargem = r.margemLiq >= 15 ? 'c-verde' : r.margemLiq >= 0 ? 'c-amarelo' : 'c-vermelho';
+    const corCaixa  = r.caixaFinal >= 30000 ? 'c-verde' : r.caixaFinal >= 0 ? 'c-amarelo' : 'c-vermelho';
+    return `<tr>
+      <td><strong>${r.coop.replace('Cooperativa ','')}</strong></td>
+      <td>${moeda(r.receitaBruta)}</td>
+      <td><span class="celula-cor ${r.lucroLiq>=0?'c-verde':'c-vermelho'}">${moeda(r.lucroLiq)}</span></td>
+      <td><span class="celula-cor ${corMargem}">${r.margemLiq.toFixed(1)}%</span></td>
+      <td><span class="celula-cor ${corCaixa}">${moeda(r.caixaFinal)}</span></td>
+      <td><span class="celula-cor ${r.repFinal>=60?'c-verde':r.repFinal>=40?'c-amarelo':'c-vermelho'}">${r.repFinal}/100</span></td>
+      <td><span class="celula-cor c-azul">${r.idc.toFixed(1)}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderIDC(idc) {
+  document.getElementById('idc-vazio').style.display = 'none';
+  document.getElementById('idc-grid').innerHTML = idc.componentes.map(c => {
+    const cor = c.score >= 70 ? '#4a9463' : c.score >= 40 ? '#f59332' : '#dc2626';
+    return `
+      <div class="idc-comp">
+        <div class="idc-comp-nome">${c.nome}</div>
+        <div class="idc-comp-peso">Peso: ${c.peso}</div>
+        <div class="idc-barra-wrap">
+          <div class="idc-barra" style="width:${c.score}%;background:${cor}"></div>
+        </div>
+        <div class="idc-pontos">${c.pontos.toFixed(1)} pts</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── ETAPAS DE PROCESSAMENTO ──
+const ETAPAS = [
+  { titulo:'Snapshot das decisões',          desc:'Registra todas as decisões enviadas pelas equipes' },
+  { titulo:'Aplicar evento externo',         desc:'Ajusta preços e mercado conforme o evento da rodada' },
+  { titulo:'Processar compras',              desc:'Calcula custo das matérias-primas com descontos' },
+  { titulo:'Calcular capacidade produtiva',  desc:'Verifica funcionários, treinamentos e limites' },
+  { titulo:'Calcular produção efetiva',      desc:'Limita ao menor valor entre compra e capacidade' },
+  { titulo:'Calcular vendas e market share', desc:'Distribui o mercado entre as cooperativas' },
+  { titulo:'Calcular CMV e despesas',        desc:'Aplica economia de escala e soma todas as despesas' },
+  { titulo:'Eventos de reputação',           desc:'Calcula variação de reputação por ação tomada' },
+  { titulo:'DRE completa',                   desc:'Gera o demonstrativo do resultado para cada equipe' },
+  { titulo:'Fluxo de caixa',                 desc:'Calcula entradas e saídas com timing de pagamentos' },
+  { titulo:'Verificar solvência',            desc:'Identifica insolventes e aplica crédito emergencial' },
+  { titulo:'Balanço patrimonial',            desc:'Atualiza ativo, passivo e patrimônio líquido' },
+  { titulo:'Calcular IDC',                   desc:'Computa o índice de desempenho cooperativo' },
+  { titulo:'Calcular IS (Sustentabilidade)', desc:'Avalia ações ESG e impacto ambiental' },
+  { titulo:'Gerar relatórios',               desc:'Publica resultados e libera acesso para as equipes' },
+];
+
+function renderEtapas(etapaAtiva = -1) {
+  document.getElementById('etapas-lista').innerHTML = ETAPAS.map((e,i) => {
+    const cls = i < etapaAtiva ? 'concluida' : i === etapaAtiva ? 'processando' : '';
+    const status = i < etapaAtiva ? '✅ Concluída' : i === etapaAtiva ? '⟳ Processando...' : '';
+    return `<div class="etapa ${cls}">
+      <div class="etapa-num">${i+1}</div>
+      <div class="etapa-info">
+        <div class="etapa-titulo">${e.titulo}</div>
+        <div class="etapa-desc">${e.desc}</div>
+      </div>
+      <div class="etapa-status">${status}</div>
+    </div>`;
+  }).join('');
+}
+
+function simularProcessamento() {
+  let i = 0;
+  renderEtapas(0);
+  const interval = setInterval(() => {
+    i++;
+    if(i >= ETAPAS.length) { clearInterval(interval); renderEtapas(ETAPAS.length); return; }
+    renderEtapas(i);
+  }, 300);
+}
+
+// ── NAVEGAÇÃO ──
+function trocarTab(id, btn) {
+  document.querySelectorAll('.painel').forEach(p => p.classList.remove('ativo'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
+  document.getElementById('tab-'+id).classList.add('ativo');
+  btn.classList.add('ativo');
+}
+
+// ── INIT ──
+renderEtapas(-1);
+</script>
+</body>
+</html>
