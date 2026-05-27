@@ -7,899 +7,436 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --verde-escuro: #1a4a2e;
-      --verde-medio: #2d6b45;
-      --verde-claro: #4a9463;
-      --laranja: #e8710a;
-      --laranja-claro: #f59332;
-      --amarelo: #f7c844;
-      --creme: #fdf6e8;
-      --creme-escuro: #f0e6c8;
-      --fundo: #f4f1ea;
-      --branco: #ffffff;
-      --texto: #1a2e1a;
-      --texto-suave: #5a7060;
-      --borda: #e2ddd4;
-      --vermelho: #dc2626;
-      --azul: #2563eb;
+      --verde-escuro:#1a4a2e;--verde-medio:#2d6b45;--verde-claro:#4a9463;
+      --laranja:#e8710a;--laranja-claro:#f59332;--amarelo:#f7c844;
+      --creme:#fdf6e8;--fundo:#f4f1ea;--branco:#ffffff;
+      --texto:#1a2e1a;--texto-suave:#5a7060;--borda:#e2ddd4;
+      --vermelho:#dc2626;
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'DM Sans',sans-serif; background:var(--fundo); color:var(--texto); min-height:100vh; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--fundo);color:var(--texto);min-height:100vh;}
 
-    /* ── HEADER ── */
-    .header {
-      background: var(--verde-escuro);
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-    }
-    .header-logo {
-      font-family:'Playfair Display',serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--creme);
-    }
-    .header-logo span { color: var(--laranja-claro); }
-    .header-coop {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .header-coop-info { text-align: right; }
-    .header-coop-nome {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--creme);
-      line-height: 1.2;
-    }
-    .header-coop-rodada {
-      font-size: 11px;
-      color: rgba(253,246,232,0.55);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .badge-rodada {
-      background: var(--laranja);
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-      letter-spacing: 0.5px;
-    }
+    /* HEADER */
+    .header{background:var(--verde-escuro);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
+    .header-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--creme);}
+    .header-logo span{color:var(--laranja-claro);}
+    .header-right{display:flex;align-items:center;gap:12px;}
+    .header-coop-nome{font-size:14px;font-weight:600;color:var(--creme);}
+    .header-coop-sub{font-size:11px;color:rgba(253,246,232,0.5);}
+    .badge-rodada{background:var(--laranja);color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
 
-    /* ── LAYOUT ── */
-    .layout {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      min-height: calc(100vh - 60px);
-    }
+    /* LAYOUT */
+    .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);}
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      background: var(--branco);
-      border-right: 1px solid var(--borda);
-      padding: 20px 0;
-      position: sticky;
-      top: 60px;
-      height: calc(100vh - 60px);
-      overflow-y: auto;
-    }
-    .sidebar-secao {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #aaa;
-      padding: 16px 20px 8px;
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border-left: 3px solid transparent;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--texto-suave);
-      text-decoration: none;
-    }
-    .nav-item:hover { background: var(--fundo); color: var(--verde-escuro); }
-    .nav-item.ativo {
-      background: #edf7f0;
-      color: var(--verde-escuro);
-      border-left-color: var(--verde-medio);
-      font-weight: 600;
-    }
-    .nav-item .icone { font-size: 18px; width: 24px; text-align: center; }
-    .nav-badge {
-      margin-left: auto;
-      background: var(--laranja);
-      color: white;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 10px;
-    }
-    .nav-badge.verde { background: var(--verde-medio); }
-    .sidebar-divisor { height: 1px; background: var(--borda); margin: 8px 16px; }
+    /* SIDEBAR */
+    .sidebar{background:var(--branco);border-right:1px solid var(--borda);padding:16px 0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;}
+    .sidebar-secao{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:#aaa;padding:14px 20px 6px;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;border-left:3px solid transparent;font-size:14px;font-weight:500;color:var(--texto-suave);transition:all 0.15s;}
+    .nav-item:hover{background:var(--fundo);color:var(--verde-escuro);}
+    .nav-item.ativo{background:#edf7f0;color:var(--verde-escuro);border-left-color:var(--verde-medio);font-weight:600;}
+    .nav-item .icone{font-size:17px;width:22px;text-align:center;}
+    .nav-badge{margin-left:auto;background:var(--laranja);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+    .sidebar-divisor{height:1px;background:var(--borda);margin:8px 16px;}
 
-    /* ── CONTEÚDO ── */
-    .conteudo {
-      padding: 28px 32px;
-      overflow-y: auto;
-    }
+    /* CONTEÚDO */
+    .conteudo{padding:28px 32px;overflow-y:auto;}
+    .aba{display:none;}
+    .aba.ativa{display:block;animation:fadeIn 0.2s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-    /* ── ABAS ── */
-    .aba { display: none; }
-    .aba.ativa { display: block; animation: fadeIn 0.25s ease; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    /* TÍTULOS */
+    .pag-titulo{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--verde-escuro);margin-bottom:4px;}
+    .pag-sub{font-size:13px;color:var(--texto-suave);margin-bottom:24px;}
 
-    /* ── TÍTULOS DE SEÇÃO ── */
-    .secao-titulo {
-      font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--verde-escuro);
-      margin-bottom: 4px;
-    }
-    .secao-sub {
-      font-size: 14px;
-      color: var(--texto-suave);
-      margin-bottom: 28px;
-    }
+    /* CARDS */
+    .card{background:var(--branco);border-radius:14px;padding:22px;border:1px solid var(--borda);margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+    .card-titulo{font-size:14px;font-weight:700;color:var(--verde-escuro);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--fundo);display:flex;align-items:center;gap:8px;}
 
-    /* ── ALERTAS ── */
-    .alerta {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 14px 18px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .alerta-icone { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-    .alerta.perigo { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-    .alerta.aviso  { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
-    .alerta.info   { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
-    .alerta.sucesso{ background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
-    .alertas-container { margin-bottom: 28px; }
+    /* INDICADORES INÍCIO */
+    .gauges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+    .gauge-card{background:var(--branco);border-radius:14px;padding:20px 14px;text-align:center;border:1px solid var(--borda);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform 0.2s;}
+    .gauge-card:hover{transform:translateY(-2px);}
+    .gauge-wrap{position:relative;width:90px;height:90px;margin:0 auto 10px;}
+    .gauge-svg{width:90px;height:90px;transform:rotate(-90deg);}
+    .gauge-track{fill:none;stroke:#f0ece4;stroke-width:9;}
+    .gauge-fill{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+    .gauge-centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .gauge-valor{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;line-height:1;}
+    .gauge-unidade{font-size:10px;color:#aaa;margin-top:1px;}
+    .gauge-titulo{font-size:12px;font-weight:600;color:var(--texto);margin-bottom:4px;}
+    .gauge-status{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;}
+    .s-verde{background:#dcfce7;color:#166534;}
+    .s-amarelo{background:#fef9c3;color:#854d0e;}
+    .s-vermelho{background:#fee2e2;color:#991b1b;}
 
-    /* ── GAUGES (medidores circulares) ── */
-    .gauges-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    .gauge-card {
-      background: var(--branco);
-      border-radius: 16px;
-      padding: 24px 16px;
-      text-align: center;
-      border: 1px solid var(--borda);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .gauge-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-    .gauge-wrap { position: relative; width: 100px; height: 100px; margin: 0 auto 12px; }
-    .gauge-svg { width: 100px; height: 100px; transform: rotate(-90deg); }
-    .gauge-track { fill: none; stroke: #f0ece4; stroke-width: 10; }
-    .gauge-fill  { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
-    .gauge-centro {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .gauge-valor {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 1;
-    }
-    .gauge-unidade { font-size: 10px; color: #aaa; margin-top: 2px; }
-    .gauge-titulo { font-size: 13px; font-weight: 600; color: var(--texto); margin-bottom: 4px; }
-    .gauge-status { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; display: inline-block; }
-    .status-verde  { background: #dcfce7; color: #166534; }
-    .status-amarelo{ background: #fef9c3; color: #854d0e; }
-    .status-vermelho{ background: #fee2e2; color: #991b1b; }
+    /* INDICADORES GRID */
+    .ind-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+    .ind-card{background:var(--branco);border-radius:12px;padding:18px;border:1px solid var(--borda);}
+    .ind-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--texto-suave);margin-bottom:6px;}
+    .ind-valor{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--verde-escuro);line-height:1;margin-bottom:4px;}
+    .ind-sub{font-size:12px;color:var(--texto-suave);}
 
-    /* ── CARDS DE INDICADORES ── */
-    .indicadores-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    .ind-card {
-      background: var(--branco);
-      border-radius: 14px;
-      padding: 20px 22px;
-      border: 1px solid var(--borda);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-    }
-    .ind-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--texto-suave);
-      margin-bottom: 8px;
-    }
-    .ind-valor {
-      font-family: 'Playfair Display', serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--verde-escuro);
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-    .ind-variacao {
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .var-positivo { color: #16a34a; }
-    .var-negativo { color: #dc2626; }
-    .var-neutro   { color: #aaa; }
+    /* FORMULÁRIOS */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+    .form-grupo{display:flex;flex-direction:column;gap:5px;}
+    .form-grupo.largo{grid-column:1/-1;}
+    .form-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--texto-suave);}
+    .form-input,.form-select,.form-textarea{padding:10px 13px;border:2px solid var(--borda);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--texto);background:var(--branco);outline:none;transition:border-color 0.2s;}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--verde-medio);}
+    .form-textarea{resize:vertical;min-height:90px;}
+    .form-hint{font-size:11px;color:#bbb;}
 
-    /* ── RANKING MINI ── */
-    .ranking-card {
-      background: var(--branco);
-      border-radius: 14px;
-      padding: 20px 22px;
-      border: 1px solid var(--borda);
-      margin-bottom: 28px;
-    }
-    .ranking-titulo {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--texto-suave);
-      margin-bottom: 16px;
-    }
-    .ranking-linha {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--fundo);
-      font-size: 14px;
-    }
-    .ranking-linha:last-child { border-bottom: none; }
-    .ranking-pos {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-    .pos-1 { background: #fef9c3; color: #854d0e; }
-    .pos-2 { background: #f1f5f9; color: #475569; }
-    .pos-3 { background: #fef3e2; color: #92400e; }
-    .pos-outros { background: #f9fafb; color: #9ca3af; }
-    .pos-minha { background: var(--verde-escuro); color: white; }
-    .ranking-nome { flex: 1; font-weight: 500; }
-    .ranking-nome.minha { font-weight: 700; color: var(--verde-escuro); }
-    .ranking-idc { font-weight: 700; color: var(--verde-escuro); font-size: 13px; }
-    .ranking-barra-wrap { width: 80px; height: 6px; background: #f0ece4; border-radius: 3px; }
-    .ranking-barra { height: 6px; border-radius: 3px; background: var(--verde-claro); transition: width 1s ease; }
+    /* OPCOES */
+    .opcoes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+    .opcao-btn{padding:12px 10px;border:2px solid var(--borda);border-radius:9px;background:var(--branco);cursor:pointer;text-align:left;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+    .opcao-btn:hover{border-color:var(--verde-medio);background:#f0fdf4;}
+    .opcao-btn.selecionado{border-color:var(--verde-medio);background:#ecfdf5;}
+    .opcao-titulo{font-size:13px;font-weight:600;color:var(--verde-escuro);margin-bottom:2px;}
+    .opcao-desc{font-size:11px;color:var(--texto-suave);line-height:1.4;}
 
-    /* ── GAZETA MINI ── */
-    .gazeta-card {
-      background: linear-gradient(135deg, var(--verde-escuro), #2d5a3e);
-      border-radius: 14px;
-      padding: 22px 24px;
-      color: var(--creme);
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .gazeta-left { flex: 1; }
-    .gazeta-tag {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--laranja-claro);
-      margin-bottom: 8px;
-    }
-    .gazeta-manchete {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 1.3;
-      margin-bottom: 8px;
-    }
-    .gazeta-desc { font-size: 13px; opacity: 0.7; line-height: 1.5; }
-    .btn-gazeta {
-      background: var(--laranja);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
-    .btn-gazeta:hover { background: var(--laranja-claro); }
+    /* ALERTAS */
+    .alerta{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:13px;line-height:1.5;}
+    .alerta.aviso{background:#fffbeb;border:1px solid #fde68a;color:#92400e;}
+    .alerta.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;}
+    .alerta.sucesso{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;}
+    .alerta.perigo{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;}
 
-    /* ── CONSTRUÇÃO ── */
-    .em-construcao {
-      background: var(--branco);
-      border-radius: 16px;
-      border: 2px dashed var(--borda);
-      padding: 60px 40px;
-      text-align: center;
-    }
-    .em-construcao .icone-grande { font-size: 56px; margin-bottom: 16px; }
-    .em-construcao h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      color: var(--verde-escuro);
-      margin-bottom: 10px;
-    }
-    .em-construcao p { font-size: 15px; color: var(--texto-suave); line-height: 1.6; max-width: 400px; margin: 0 auto; }
+    /* GAZETA */
+    .gazeta-card{background:linear-gradient(135deg,var(--verde-escuro),#2d5a3e);border-radius:14px;padding:20px 22px;color:var(--creme);margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+    .gazeta-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--laranja-claro);margin-bottom:6px;}
+    .gazeta-manchete{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+    .gazeta-dados{font-size:12px;opacity:0.65;}
+    .btn-gazeta{background:var(--laranja);color:white;border:none;padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;flex-shrink:0;}
+    .btn-gazeta:hover{background:var(--laranja-claro);}
 
-    /* ── FORMULÁRIOS (estrutura base) ── */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-    .form-grupo { display: flex; flex-direction: column; gap: 6px; }
-    .form-grupo.largo { grid-column: 1 / -1; }
-    .form-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--texto-suave);
-    }
-    .form-input, .form-select, .form-textarea {
-      padding: 11px 14px;
-      border: 2px solid var(--borda);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--texto);
-      background: var(--branco);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--verde-medio); }
-    .form-textarea { resize: vertical; min-height: 100px; }
-    .form-hint { font-size: 12px; color: #aaa; }
-    .form-card {
-      background: var(--branco);
-      border-radius: 14px;
-      padding: 24px;
-      border: 1px solid var(--borda);
-      margin-bottom: 20px;
-    }
-    .form-card-titulo {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--verde-escuro);
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--fundo);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-salvar {
-      width: 100%;
-      padding: 15px;
-      background: var(--verde-escuro);
-      color: var(--creme);
-      border: none;
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-salvar::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--laranja), var(--laranja-claro));
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .btn-salvar:hover::before { opacity: 1; }
-    .btn-salvar:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,113,10,0.3); }
-    .btn-salvar span { position: relative; z-index: 1; }
+    /* RANKING MINI */
+    .ranking-mini{background:var(--branco);border-radius:14px;padding:18px;border:1px solid var(--borda);}
+    .rank-linha{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--fundo);font-size:13px;}
+    .rank-linha:last-child{border-bottom:none;}
+    .rank-pos{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+    .rp1{background:#fef9c3;color:#854d0e;}
+    .rp2{background:#f1f5f9;color:#475569;}
+    .rp3{background:#fef3e2;color:#92400e;}
+    .rpn{background:#f9fafb;color:#9ca3af;}
+    .rp-eu{background:var(--verde-escuro);color:white;}
+    .rank-nome{flex:1;font-weight:500;}
+    .rank-nome.eu{font-weight:700;color:var(--verde-escuro);}
+    .rank-barra-wrap{width:70px;height:5px;background:#f0ece4;border-radius:3px;}
+    .rank-barra{height:5px;border-radius:3px;background:var(--verde-claro);}
+    .rank-idc{font-weight:700;font-size:13px;color:var(--verde-escuro);min-width:36px;text-align:right;}
 
-    /* Opções de escolha */
-    .opcoes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .opcao-btn {
-      padding: 14px 12px;
-      border: 2px solid var(--borda);
-      border-radius: 10px;
-      background: var(--branco);
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.15s;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .opcao-btn:hover { border-color: var(--verde-medio); background: #f0fdf4; }
-    .opcao-btn.selecionado { border-color: var(--verde-medio); background: #ecfdf5; }
-    .opcao-titulo { font-size: 13px; font-weight: 600; color: var(--verde-escuro); margin-bottom: 3px; }
-    .opcao-desc { font-size: 11px; color: var(--texto-suave); line-height: 1.4; }
+    /* CARTA */
+    .carta-wrap{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #fde68a;border-radius:14px;padding:22px;margin-bottom:16px;}
+    .carta-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .carta-header h3{font-family:'Playfair Display',serif;font-size:17px;color:#92400e;}
+    .carta-obrig{margin-left:auto;background:#dc2626;color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+    .carta-contador{text-align:right;font-size:12px;color:#aaa;margin-top:5px;}
+    .carta-contador.quase{color:#f59332;font-weight:600;}
+    .carta-contador.cheio{color:#dc2626;font-weight:600;}
 
-    /* Carta de Estratégia */
-    .carta-container {
-      background: linear-gradient(135deg, #fffbeb, #fef3c7);
-      border: 2px solid #fde68a;
-      border-radius: 14px;
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-    .carta-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .carta-header h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      color: #92400e;
-    }
-    .carta-obrig {
-      margin-left: auto;
-      background: #dc2626;
-      color: white;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .carta-contador { text-align: right; font-size: 12px; color: #aaa; margin-top: 6px; }
-    .carta-contador.quase { color: #f59332; font-weight: 600; }
-    .carta-contador.cheio { color: #dc2626; font-weight: 600; }
+    /* RESUMO DE DECISÕES */
+    .resumo-decisoes{background:var(--fundo);border-radius:12px;padding:16px;margin-bottom:18px;}
+    .resumo-titulo{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--texto-suave);margin-bottom:12px;}
+    .resumo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+    .resumo-item{background:var(--branco);border-radius:8px;padding:10px 12px;border:1px solid var(--borda);}
+    .resumo-item-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:3px;}
+    .resumo-item-valor{font-size:14px;font-weight:600;color:var(--verde-escuro);}
+    .resumo-item-valor.vazio{color:#ccc;font-style:italic;font-weight:400;}
 
-    /* Responsivo */
-    @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-      .gauges-grid { grid-template-columns: repeat(2, 1fr); }
-      .indicadores-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    /* BTN SALVAR */
+    .btn-salvar{width:100%;padding:14px;background:var(--verde-escuro);color:var(--creme);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+    .btn-salvar::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--laranja),var(--laranja-claro));opacity:0;transition:opacity 0.3s;}
+    .btn-salvar:hover::before{opacity:1;}
+    .btn-salvar:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,113,10,0.3);}
+    .btn-salvar span{position:relative;z-index:1;}
+
+    /* EM CONSTRUÇÃO */
+    .em-construcao{background:var(--branco);border-radius:14px;border:2px dashed var(--borda);padding:50px 30px;text-align:center;}
+    .em-construcao .ec-icone{font-size:48px;margin-bottom:14px;}
+    .em-construcao h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--verde-escuro);margin-bottom:8px;}
+    .em-construcao p{font-size:14px;color:var(--texto-suave);line-height:1.6;max-width:380px;margin:0 auto;}
+
+    @media(max-width:860px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.gauges-grid{grid-template-columns:repeat(2,1fr);}.ind-grid{grid-template-columns:repeat(2,1fr);}}
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="header-logo">Cítrus<span>Sim</span></div>
-  <div class="header-coop">
-    <div class="header-coop-info">
-      <div class="header-coop-nome">Cooperativa Horizonte Verde</div>
-      <div class="header-coop-rodada">Torneio CítrusSim 2026</div>
+  <div class="header-right">
+    <div>
+      <div class="header-coop-nome" id="coop-nome">Cooperativa</div>
+      <div class="header-coop-sub">Torneio CítrusSim 2026</div>
     </div>
-    <span class="badge-rodada">🌾 Rodada 1</span>
+    <span class="badge-rodada" id="badge-rodada">🌾 Rodada 1</span>
   </div>
 </header>
 
 <div class="layout">
-
-  <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-secao">Minha Cooperativa</div>
-    <a class="nav-item ativo" onclick="trocarAba('inicio', this)">
-      <span class="icone">🏠</span> Início
-    </a>
-    <a class="nav-item" onclick="trocarAba('estoque', this)">
-      <span class="icone">📦</span> Estoque & Compras
-    </a>
-    <a class="nav-item" onclick="trocarAba('financeiro', this)">
-      <span class="icone">🏦</span> Financeiro
-    </a>
-    <a class="nav-item" onclick="trocarAba('mercado', this)">
-      <span class="icone">💰</span> Mercado
-    </a>
-    <a class="nav-item" onclick="trocarAba('pessoas', this)">
-      <span class="icone">👥</span> Pessoas
-    </a>
+    <div class="nav-item ativo" onclick="trocarAba('inicio',this)"><span class="icone">🏠</span>Início</div>
+    <div class="nav-item" onclick="trocarAba('estoque',this)"><span class="icone">📦</span>Estoque & Compras</div>
+    <div class="nav-item" onclick="trocarAba('financeiro',this)"><span class="icone">🏦</span>Financeiro</div>
+    <div class="nav-item" onclick="trocarAba('mercado',this)"><span class="icone">💰</span>Mercado</div>
+    <div class="nav-item" onclick="trocarAba('pessoas',this)"><span class="icone">👥</span>Pessoas</div>
     <div class="sidebar-divisor"></div>
     <div class="sidebar-secao">Relatórios</div>
-    <a class="nav-item" onclick="trocarAba('contabil', this)">
-      <span class="icone">📊</span> Contábil & DRE
-    </a>
-    <a class="nav-item" onclick="trocarAba('comercio', this)">
-      <span class="icone">🌍</span> Comércio Ext.
-    </a>
-    <a class="nav-item" onclick="trocarAba('pd', this)">
-      <span class="icone">🔬</span> P&D & Portfólio
-    </a>
+    <div class="nav-item" onclick="trocarAba('contabil',this)"><span class="icone">📊</span>Contábil & DRE</div>
+    <div class="nav-item" onclick="trocarAba('comercio',this)"><span class="icone">🌍</span>Comércio Ext.</div>
+    <div class="nav-item" onclick="trocarAba('pd',this)"><span class="icone">🔬</span>P&D & Portfólio</div>
     <div class="sidebar-divisor"></div>
-    <a class="nav-item" onclick="trocarAba('decisoes', this)" style="background:#fffbeb; border-left: 3px solid #f59332;">
-      <span class="icone">✍️</span> Decisões
-      <span class="nav-badge">!</span>
-    </a>
+    <div class="nav-item" id="nav-decisoes" onclick="trocarAba('decisoes',this)" style="background:#fffbeb;border-left:3px solid #f59332;">
+      <span class="icone">✍️</span>Decisões<span class="nav-badge" id="badge-decisoes">!</span>
+    </div>
   </nav>
 
-  <!-- CONTEÚDO -->
   <main class="conteudo">
 
-    <!-- ══════════════════════════════════════════════
-         ABA: INÍCIO
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: INÍCIO -->
     <div class="aba ativa" id="aba-inicio">
-      <div class="secao-titulo">🏠 Painel da Cooperativa</div>
-      <div class="secao-sub">Rodada 1 em andamento — prazo até sexta-feira às 18h</div>
+      <div class="pag-titulo">🏠 Painel da Cooperativa</div>
+      <div class="pag-sub" id="sub-rodada">Rodada 1 em andamento — prazo até sexta-feira às 18h</div>
 
-      <!-- Alertas -->
-      <div class="alertas-container" id="alertas-container">
-        <div class="alerta aviso">
-          <span class="alerta-icone">⏰</span>
-          <div><strong>Prazo se aproximando!</strong> Você tem até sexta-feira às 18h para enviar as decisões desta rodada. Leia a Gazeta do Campo antes de decidir.</div>
-        </div>
-        <div class="alerta info">
-          <span class="alerta-icone">📰</span>
-          <div><strong>Gazeta do Campo publicada.</strong> A edição da Rodada 1 está disponível. Leia antes de tomar suas decisões!</div>
-        </div>
+      <div class="alerta aviso">
+        <span>⏰</span>
+        <div><strong>Prazo se aproximando!</strong> Preencha as decisões em cada aba e salve na aba ✍️ Decisões antes do prazo.</div>
       </div>
 
-      <!-- Gauges -->
+      <div class="gazeta-card">
+        <div>
+          <div class="gazeta-tag">📰 Gazeta do Campo — Rodada 1</div>
+          <div class="gazeta-manchete">Mercado citrícola aquecido: demanda cresce 12%</div>
+          <div class="gazeta-dados">Preço referência suco: R$42/cx · Mercado: 6.400 cx · Câmbio: R$5,80</div>
+        </div>
+        <button class="btn-gazeta" onclick="trocarAba('decisoes',document.getElementById('nav-decisoes'))">📋 Tomar Decisões →</button>
+      </div>
+
       <div class="gauges-grid">
         <div class="gauge-card">
           <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 0 100 100">
-              <circle class="gauge-track" cx="50" cy="50" r="40"/>
-              <circle class="gauge-fill" cx="50" cy="50" r="40"
-                stroke="#2d6b45"
-                stroke-dasharray="251.2"
-                stroke-dashoffset="75"
-                id="gauge-caixa-fill"/>
-            </svg>
-            <div class="gauge-centro">
-              <span class="gauge-valor" style="color:#2d6b45; font-size:13px;">R$50k</span>
-              <span class="gauge-unidade">caixa</span>
-            </div>
+            <svg class="gauge-svg" viewBox="0 0 90 90"><circle class="gauge-track" cx="45" cy="45" r="36"/><circle class="gauge-fill" cx="45" cy="45" r="36" stroke="#2d6b45" stroke-dasharray="226" stroke-dashoffset="68"/></svg>
+            <div class="gauge-centro"><span class="gauge-valor" style="color:#2d6b45;font-size:13px;" id="g-caixa">R$50k</span><span class="gauge-unidade">caixa</span></div>
           </div>
-          <div class="gauge-titulo">💰 Caixa Disponível</div>
-          <span class="gauge-status status-verde">✅ Saudável</span>
+          <div class="gauge-titulo">💰 Caixa</div>
+          <span class="gauge-status s-verde">✅ Saudável</span>
         </div>
-
         <div class="gauge-card">
           <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 0 100 100">
-              <circle class="gauge-track" cx="50" cy="50" r="40"/>
-              <circle class="gauge-fill" cx="50" cy="50" r="40"
-                stroke="#f59332"
-                stroke-dasharray="251.2"
-                stroke-dashoffset="176"
-                id="gauge-estoque-fill"/>
-            </svg>
-            <div class="gauge-centro">
-              <span class="gauge-valor" style="color:#f59332;">0</span>
-              <span class="gauge-unidade">caixas</span>
-            </div>
+            <svg class="gauge-svg" viewBox="0 0 90 90"><circle class="gauge-track" cx="45" cy="45" r="36"/><circle class="gauge-fill" cx="45" cy="45" r="36" stroke="#f59332" stroke-dasharray="226" stroke-dashoffset="158"/></svg>
+            <div class="gauge-centro"><span class="gauge-valor" style="color:#f59332;" id="g-estoque">0</span><span class="gauge-unidade">caixas</span></div>
           </div>
           <div class="gauge-titulo">📦 Estoque</div>
-          <span class="gauge-status status-amarelo">⚠️ Vazio</span>
+          <span class="gauge-status s-amarelo">⚠️ Vazio</span>
         </div>
-
         <div class="gauge-card">
           <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 0 100 100">
-              <circle class="gauge-track" cx="50" cy="50" r="40"/>
-              <circle class="gauge-fill" cx="50" cy="50" r="40"
-                stroke="#2563eb"
-                stroke-dasharray="251.2"
-                stroke-dashoffset="126"
-                id="gauge-rep-fill"/>
-            </svg>
-            <div class="gauge-centro">
-              <span class="gauge-valor" style="color:#2563eb;">50</span>
-              <span class="gauge-unidade">/ 100</span>
-            </div>
+            <svg class="gauge-svg" viewBox="0 0 90 90"><circle class="gauge-track" cx="45" cy="45" r="36"/><circle class="gauge-fill" cx="45" cy="45" r="36" stroke="#2563eb" stroke-dasharray="226" stroke-dashoffset="113"/></svg>
+            <div class="gauge-centro"><span class="gauge-valor" style="color:#2563eb;" id="g-rep">50</span><span class="gauge-unidade">/100</span></div>
           </div>
           <div class="gauge-titulo">⭐ Reputação</div>
-          <span class="gauge-status status-amarelo">🟡 Regular</span>
+          <span class="gauge-status s-amarelo">🟡 Regular</span>
         </div>
-
         <div class="gauge-card">
           <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 0 100 100">
-              <circle class="gauge-track" cx="50" cy="50" r="40"/>
-              <circle class="gauge-fill" cx="50" cy="50" r="40"
-                stroke="#e8710a"
-                stroke-dasharray="251.2"
-                stroke-dashoffset="176"
-                id="gauge-idc-fill"/>
-            </svg>
-            <div class="gauge-centro">
-              <span class="gauge-valor" style="color:#e8710a;">—</span>
-              <span class="gauge-unidade">IDC</span>
-            </div>
+            <svg class="gauge-svg" viewBox="0 0 90 90"><circle class="gauge-track" cx="45" cy="45" r="36"/><circle class="gauge-fill" cx="45" cy="45" r="36" stroke="#e8710a" stroke-dasharray="226" stroke-dashoffset="158"/></svg>
+            <div class="gauge-centro"><span class="gauge-valor" style="color:#e8710a;font-size:14px;">—</span><span class="gauge-unidade">IDC</span></div>
           </div>
-          <div class="gauge-titulo">🏆 Ranking IDC</div>
-          <span class="gauge-status status-amarelo">Aguardando R1</span>
+          <div class="gauge-titulo">🏆 Ranking</div>
+          <span class="gauge-status s-amarelo">Aguardando R1</span>
         </div>
       </div>
 
-      <!-- Indicadores financeiros -->
-      <div class="indicadores-grid">
-        <div class="ind-card">
-          <div class="ind-label">👩‍💼 Funcionários</div>
-          <div class="ind-valor">6</div>
-          <div class="ind-variacao var-neutro">— Base inicial</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-label">🌾 Cooperados</div>
-          <div class="ind-valor">20</div>
-          <div class="ind-variacao var-neutro">— Base inicial</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-label">⚡ Capacidade Produtiva</div>
-          <div class="ind-valor">600 cx</div>
-          <div class="ind-variacao var-neutro">— 100 cx/funcionário</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-label">💸 Folha de Pagamento</div>
-          <div class="ind-valor">R$10.800</div>
-          <div class="ind-variacao var-negativo">↓ Custo fixo por rodada</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-label">🏛️ Capital Social</div>
-          <div class="ind-valor">R$20.000</div>
-          <div class="ind-variacao var-neutro">— Intocável</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-label">🔬 Linhas P&D</div>
-          <div class="ind-valor">0 / 2</div>
-          <div class="ind-variacao var-neutro">— Nenhuma ativa</div>
-        </div>
+      <div class="ind-grid">
+        <div class="ind-card"><div class="ind-label">👩‍💼 Funcionários</div><div class="ind-valor" id="ind-func">6</div><div class="ind-sub">Base inicial</div></div>
+        <div class="ind-card"><div class="ind-label">⚡ Capacidade</div><div class="ind-valor" id="ind-cap">600 cx</div><div class="ind-sub">100 cx/funcionário</div></div>
+        <div class="ind-card"><div class="ind-label">💸 Folha</div><div class="ind-valor">R$10.800</div><div class="ind-sub">Custo fixo/rodada</div></div>
+        <div class="ind-card"><div class="ind-label">🌾 Cooperados</div><div class="ind-valor">20</div><div class="ind-sub">Associados</div></div>
+        <div class="ind-card"><div class="ind-label">🏛️ Capital Social</div><div class="ind-valor">R$20.000</div><div class="ind-sub">Intocável</div></div>
+        <div class="ind-card"><div class="ind-label">🔬 P&D Ativas</div><div class="ind-valor" id="ind-pd">0 / 2</div><div class="ind-sub">Linhas em pesquisa</div></div>
       </div>
 
-      <!-- Ranking mini -->
-      <div class="ranking-card">
-        <div class="ranking-titulo">🏆 Ranking — Rodada Atual</div>
-        <div class="ranking-linha">
-          <span class="ranking-pos pos-1">1</span>
-          <span class="ranking-nome">Cooperativa Sol do Campo</span>
-          <div class="ranking-barra-wrap"><div class="ranking-barra" style="width:82%"></div></div>
-          <span class="ranking-idc">82,4</span>
-        </div>
-        <div class="ranking-linha">
-          <span class="ranking-pos pos-2">2</span>
-          <span class="ranking-nome">Cooperativa Vale Citrícola</span>
-          <div class="ranking-barra-wrap"><div class="ranking-barra" style="width:75%"></div></div>
-          <span class="ranking-idc">75,1</span>
-        </div>
-        <div class="ranking-linha">
-          <span class="ranking-pos pos-3">3</span>
-          <span class="ranking-nome">Cooperativa Terra Frutífera</span>
-          <div class="ranking-barra-wrap"><div class="ranking-barra" style="width:70%"></div></div>
-          <span class="ranking-idc">70,8</span>
-        </div>
-        <div class="ranking-linha">
-          <span class="ranking-pos pos-minha">4</span>
-          <span class="ranking-nome minha">★ Cooperativa Horizonte Verde</span>
-          <div class="ranking-barra-wrap"><div class="ranking-barra" style="width:65%; background: var(--laranja)"></div></div>
-          <span class="ranking-idc" style="color:var(--laranja)">—</span>
-        </div>
-        <div class="ranking-linha">
-          <span class="ranking-pos pos-outros">5</span>
-          <span class="ranking-nome">Cooperativa Jales Agro...</span>
-          <div class="ranking-barra-wrap"><div class="ranking-barra" style="width:58%"></div></div>
-          <span class="ranking-idc">58,2</span>
-        </div>
-      </div>
-
-      <!-- Gazeta do Campo -->
-      <div class="gazeta-card">
-        <div class="gazeta-left">
-          <div class="gazeta-tag">📰 Gazeta do Campo — Edição Rodada 1</div>
-          <div class="gazeta-manchete">Mercado citrícola aquecido: demanda cresce 12% na região noroeste paulista</div>
-          <div class="gazeta-desc">Preço de referência do suco: R$ 42,00/cx · Mercado total: 6.400 caixas · Câmbio: R$ 5,80</div>
-        </div>
-        <button class="btn-gazeta" onclick="trocarAba('decisoes', document.querySelector('[onclick*=decisoes]'))">
-          📋 Tomar Decisões →
-        </button>
+      <div class="ranking-mini">
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--texto-suave);margin-bottom:14px;">🏆 Ranking — Rodada Atual</div>
+        <div class="rank-linha"><span class="rank-pos rp1">1</span><span class="rank-nome">Sol do Campo</span><div class="rank-barra-wrap"><div class="rank-barra" style="width:82%"></div></div><span class="rank-idc">82,4</span></div>
+        <div class="rank-linha"><span class="rank-pos rp2">2</span><span class="rank-nome">Vale Citrícola</span><div class="rank-barra-wrap"><div class="rank-barra" style="width:75%"></div></div><span class="rank-idc">75,1</span></div>
+        <div class="rank-linha"><span class="rank-pos rp3">3</span><span class="rank-nome">Terra Frutífera</span><div class="rank-barra-wrap"><div class="rank-barra" style="width:71%"></div></div><span class="rank-idc">70,8</span></div>
+        <div class="rank-linha"><span class="rank-pos rp-eu">4</span><span class="rank-nome eu" id="rank-minha-coop">★ Sua cooperativa</span><div class="rank-barra-wrap"><div class="rank-barra" style="width:50%;background:var(--laranja)"></div></div><span class="rank-idc" style="color:var(--laranja)">—</span></div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ABA: ESTOQUE
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: ESTOQUE -->
     <div class="aba" id="aba-estoque">
-      <div class="secao-titulo">📦 Estoque & Compras</div>
-      <div class="secao-sub">Defina a política de suprimento da sua cooperativa nesta rodada</div>
-      <div class="form-card">
-        <div class="form-card-titulo">🍊 Compra de Matéria-Prima</div>
+      <div class="pag-titulo">📦 Estoque & Compras</div>
+      <div class="pag-sub">Defina sua política de suprimento para esta rodada</div>
+      <div class="card">
+        <div class="card-titulo">🍊 Compra de Matéria-Prima</div>
         <div class="form-grid">
           <div class="form-grupo">
             <label class="form-label">Quantidade de laranja (caixas)</label>
-            <input class="form-input" type="number" min="0" placeholder="Ex: 500" id="compra-qtd"/>
-            <span class="form-hint">Capacidade atual: 600 cx/rodada · Estoque atual: 0 cx</span>
+            <input class="form-input" type="number" min="0" max="600" id="est-qtd" placeholder="Ex: 500" oninput="sincronizar('compra',this.value);atualizarResumo()"/>
+            <span class="form-hint">Capacidade atual: <span id="hint-cap">600</span> cx · Preço: R$18/cx</span>
           </div>
           <div class="form-grupo">
             <label class="form-label">Tipo de pagamento</label>
             <div class="opcoes-grid">
-              <div class="opcao-btn selecionado" onclick="selecionarOpcao(this, 'pagamento')">
+              <div class="opcao-btn selecionado" id="op-pagto-av" onclick="selecionarOpcaoGrupo('pagto','AV',this)">
                 <div class="opcao-titulo">💵 À vista</div>
-                <div class="opcao-desc">5% de desconto no preço da laranja</div>
+                <div class="opcao-desc">5% de desconto no preço</div>
               </div>
-              <div class="opcao-btn" onclick="selecionarOpcao(this, 'pagamento')">
+              <div class="opcao-btn" id="op-pagto-ap" onclick="selecionarOpcaoGrupo('pagto','AP',this)">
                 <div class="opcao-titulo">📅 A prazo</div>
-                <div class="opcao-desc">Paga na próxima rodada, sem desconto</div>
+                <div class="opcao-desc">Paga na próxima rodada</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="em-construcao">
-        <div class="icone-grande">🔧</div>
-        <h3>Política de Suprimento</h3>
-        <p>As opções de contrato de longo prazo e diversificação de fornecedores serão ativadas na próxima etapa do desenvolvimento.</p>
-      </div>
+      <div class="alerta info"><span>💡</span><div>Comprar à vista garante 5% de desconto. A prazo preserva o caixa mas gera compromisso na próxima rodada.</div></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ABA: FINANCEIRO
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: FINANCEIRO -->
     <div class="aba" id="aba-financeiro">
-      <div class="secao-titulo">🏦 Financeiro</div>
-      <div class="secao-sub">Crédito, investimentos, seguros e distribuição de sobras</div>
-      <div class="em-construcao">
-        <div class="icone-grande">🏦</div>
-        <h3>Módulo Financeiro</h3>
-        <p>Aqui você poderá captar crédito, contratar seguro agrícola, investir em capital imobilizado e definir a política de distribuição de sobras. Em breve!</p>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════════
-         ABA: MERCADO
-    ══════════════════════════════════════════════ -->
-    <div class="aba" id="aba-mercado">
-      <div class="secao-titulo">💰 Mercado & Comercialização</div>
-      <div class="secao-sub">Defina preço, market share e condições de venda</div>
-      <div class="form-card">
-        <div class="form-card-titulo">📈 Estratégia de Preço e Mercado</div>
+      <div class="pag-titulo">🏦 Financeiro</div>
+      <div class="pag-sub">Crédito, seguros e distribuição de sobras</div>
+      <div class="card">
+        <div class="card-titulo">💳 Captação de Crédito</div>
         <div class="form-grid">
           <div class="form-grupo">
-            <label class="form-label">Preço de venda por caixa (R$)</label>
-            <input class="form-input" type="number" min="1" placeholder="Ex: 44" id="preco-venda"/>
-            <span class="form-hint">Preço de referência desta rodada: R$ 42,00</span>
+            <label class="form-label">Valor do crédito a captar (R$)</label>
+            <input class="form-input" type="number" min="0" id="fin-credito" placeholder="0" oninput="sincronizar('credito',this.value);atualizarResumo()"/>
+            <span class="form-hint">Taxa: 2% ao mês · Máximo: R$30.000</span>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Seguro agrícola</label>
+            <div class="opcoes-grid">
+              <div class="opcao-btn selecionado" id="op-seguro-nao" onclick="selecionarOpcaoGrupo('seguro','NAO',this)">
+                <div class="opcao-titulo">❌ Não contratar</div>
+                <div class="opcao-desc">Sem proteção</div>
+              </div>
+              <div class="opcao-btn" id="op-seguro-sim" onclick="selecionarOpcaoGrupo('seguro','SIM',this)">
+                <div class="opcao-titulo">🛡️ Contratar</div>
+                <div class="opcao-desc">R$2.000 · Cobre eventos climáticos</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-grupo largo">
+            <label class="form-label">Distribuição de sobras</label>
+            <div class="opcoes-grid" style="grid-template-columns:repeat(3,1fr)">
+              <div class="opcao-btn selecionado" id="op-sobras-reinv" onclick="selecionarOpcaoGrupo('sobras','REINV',this)">
+                <div class="opcao-titulo">🔄 Reinvestir tudo</div>
+                <div class="opcao-desc">Maximiza crescimento</div>
+              </div>
+              <div class="opcao-btn" id="op-sobras-50" onclick="selecionarOpcaoGrupo('sobras','50',this)">
+                <div class="opcao-titulo">✌️ 50% distribuir</div>
+                <div class="opcao-desc">Equilíbrio</div>
+              </div>
+              <div class="opcao-btn" id="op-sobras-dist" onclick="selecionarOpcaoGrupo('sobras','DIST',this)">
+                <div class="opcao-titulo">💰 Distribuir tudo</div>
+                <div class="opcao-desc">Máximo para cooperados</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA: MERCADO -->
+    <div class="aba" id="aba-mercado">
+      <div class="pag-titulo">💰 Mercado & Comercialização</div>
+      <div class="pag-sub">Defina preço, market share e condições de venda</div>
+      <div class="card">
+        <div class="card-titulo">📈 Estratégia Comercial</div>
+        <div class="form-grid">
+          <div class="form-grupo">
+            <label class="form-label">Preço de venda (R$/cx)</label>
+            <input class="form-input" type="number" min="1" id="merc-preco" placeholder="Ex: 44" oninput="sincronizar('preco',this.value);atualizarResumo()"/>
+            <span class="form-hint">Referência desta rodada: R$42/cx</span>
           </div>
           <div class="form-grupo">
             <label class="form-label">Market share desejado (%)</label>
-            <input class="form-input" type="number" min="1" max="100" placeholder="Ex: 15" id="market-share"/>
-            <span class="form-hint">Mercado total: 6.400 caixas · Sua fatia atual: —</span>
+            <input class="form-input" type="number" min="1" max="100" id="merc-ms" placeholder="Ex: 15" oninput="sincronizar('ms',this.value);atualizarResumo()"/>
+            <span class="form-hint">Mercado total: 6.400 cx</span>
           </div>
           <div class="form-grupo largo">
             <label class="form-label">Tipo de recebimento</label>
-            <div class="opcoes-grid" style="grid-template-columns: repeat(4,1fr)">
-              <div class="opcao-btn selecionado" onclick="selecionarOpcao(this, 'recebimento')">
-                <div class="opcao-titulo">💵 À vista</div>
-                <div class="opcao-desc">100% agora</div>
-              </div>
-              <div class="opcao-btn" onclick="selecionarOpcao(this, 'recebimento')">
-                <div class="opcao-titulo">📅 A prazo</div>
-                <div class="opcao-desc">100% na próxima rodada</div>
-              </div>
-              <div class="opcao-btn" onclick="selecionarOpcao(this, 'recebimento')">
-                <div class="opcao-titulo">✌️ 2x</div>
-                <div class="opcao-desc">50% agora + 50% depois</div>
-              </div>
-              <div class="opcao-btn" onclick="selecionarOpcao(this, 'recebimento')">
-                <div class="opcao-titulo">3️⃣ 3x</div>
-                <div class="opcao-desc">1/3 por rodada</div>
-              </div>
+            <div class="opcoes-grid" style="grid-template-columns:repeat(4,1fr)">
+              <div class="opcao-btn selecionado" id="op-receb-av" onclick="selecionarOpcaoGrupo('receb','AV',this)"><div class="opcao-titulo">💵 À vista</div><div class="opcao-desc">100% agora</div></div>
+              <div class="opcao-btn" id="op-receb-ap" onclick="selecionarOpcaoGrupo('receb','AP',this)"><div class="opcao-titulo">📅 A prazo</div><div class="opcao-desc">100% próx. rodada</div></div>
+              <div class="opcao-btn" id="op-receb-2x" onclick="selecionarOpcaoGrupo('receb','2x',this)"><div class="opcao-titulo">✌️ 2x</div><div class="opcao-desc">50% + 50%</div></div>
+              <div class="opcao-btn" id="op-receb-3x" onclick="selecionarOpcaoGrupo('receb','3x',this)"><div class="opcao-titulo">3️⃣ 3x</div><div class="opcao-desc">1/3 por rodada</div></div>
+            </div>
+          </div>
+          <div class="form-grupo largo">
+            <label class="form-label">Investimento em marketing</label>
+            <div class="opcoes-grid" style="grid-template-columns:repeat(4,1fr)">
+              <div class="opcao-btn selecionado" id="op-mkt-0" onclick="selecionarOpcaoGrupo('mkt','0',this)"><div class="opcao-titulo">❌ Nenhum</div><div class="opcao-desc">R$0</div></div>
+              <div class="opcao-btn" id="op-mkt-500" onclick="selecionarOpcaoGrupo('mkt','500',this)"><div class="opcao-titulo">📢 Básico</div><div class="opcao-desc">R$500</div></div>
+              <div class="opcao-btn" id="op-mkt-2000" onclick="selecionarOpcaoGrupo('mkt','2000',this)"><div class="opcao-titulo">📣 Médio</div><div class="opcao-desc">R$2.000</div></div>
+              <div class="opcao-btn" id="op-mkt-5000" onclick="selecionarOpcaoGrupo('mkt','5000',this)"><div class="opcao-titulo">🔊 Intenso</div><div class="opcao-desc">R$5.000</div></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ABA: PESSOAS
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: PESSOAS -->
     <div class="aba" id="aba-pessoas">
-      <div class="secao-titulo">👥 Gestão de Pessoas</div>
-      <div class="secao-sub">Contratações, demissões e investimento em treinamento</div>
-      <div class="form-card">
-        <div class="form-card-titulo">👤 Quadro de Funcionários</div>
+      <div class="pag-titulo">👥 Gestão de Pessoas</div>
+      <div class="pag-sub">Contratações, demissões e treinamento</div>
+      <div class="card">
+        <div class="card-titulo">👤 Quadro de Funcionários</div>
         <div class="form-grid">
           <div class="form-grupo">
             <label class="form-label">Contratar (+) ou demitir (−)</label>
-            <input class="form-input" type="number" min="-10" max="10" placeholder="0 = sem alteração" id="rh-alteracao"/>
-            <span class="form-hint">Funcionários atuais: 6 · Custo contrat.: R$2.700 · Demissão: R$3.600</span>
+            <input class="form-input" type="number" min="-10" max="10" id="rh-alter" placeholder="0 = sem alteração" oninput="sincronizar('rh',this.value);atualizarCapacidade();atualizarResumo()"/>
+            <span class="form-hint">Atual: 6 func. · Contrat: R$2.700 · Demit: R$3.600/pessoa</span>
           </div>
           <div class="form-grupo">
             <label class="form-label">Tipo de treinamento</label>
-            <select class="form-select" id="rh-treinamento">
-              <option value="NAO">Não treinar nesta rodada</option>
+            <select class="form-select" id="rh-treino" onchange="sincronizar('treino',this.value);atualizarResumo()">
+              <option value="NAO">Não treinar esta rodada</option>
               <option value="OP">Operacional — +15% produtividade</option>
               <option value="COM">Comercial — melhora negociação</option>
               <option value="QUA">Qualidade — reduz riscos</option>
               <option value="GES">Gestão — reduz custos admin.</option>
             </select>
-            <span class="form-hint">Máximo 1 tipo de treinamento por rodada</span>
           </div>
         </div>
       </div>
-      <div class="alerta info">
-        <span class="alerta-icone">⚠️</span>
-        <div>Demitir mais de 30% do quadro em uma rodada gera queda de reputação. Contratações têm custo imediato no caixa.</div>
-      </div>
+      <div class="alerta info"><span>⚠️</span><div>Demitir mais de 30% do quadro em uma rodada gera queda de reputação. Contratações têm custo imediato no caixa.</div></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ABA: CONTÁBIL
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: CONTÁBIL -->
     <div class="aba" id="aba-contabil">
-      <div class="secao-titulo">📊 Contábil & DRE</div>
-      <div class="secao-sub">Demonstrativos financeiros da sua cooperativa</div>
-      <div class="em-construcao">
-        <div class="icone-grande">📊</div>
-        <h3>DRE e Balanço Patrimonial</h3>
-        <p>Após o processamento da primeira rodada, você verá aqui a Demonstração do Resultado do Exercício e o Balanço Patrimonial completo da sua cooperativa.</p>
-      </div>
+      <div class="pag-titulo">📊 Contábil & DRE</div>
+      <div class="pag-sub">Demonstrativos financeiros da sua cooperativa</div>
+      <div class="em-construcao"><div class="ec-icone">📊</div><h3>DRE e Balanço</h3><p>Após o processamento da primeira rodada, você verá aqui a Demonstração do Resultado e o Balanço Patrimonial completo.</p></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ABA: COMÉRCIO
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: COMÉRCIO -->
     <div class="aba" id="aba-comercio">
-      <div class="secao-titulo">🌍 Comércio Exterior</div>
-      <div class="secao-sub">Exportação, certificação e câmbio</div>
-      <div class="em-construcao">
-        <div class="icone-grande">🌍</div>
-        <h3>Comércio Internacional</h3>
-        <p>Para exportar, sua cooperativa precisará primeiro obter certificação de qualidade via P&D. Este módulo será ativado quando o requisito for atendido.</p>
-      </div>
+      <div class="pag-titulo">🌍 Comércio Exterior</div>
+      <div class="pag-sub">Exportação, certificação e câmbio</div>
+      <div class="em-construcao"><div class="ec-icone">🌍</div><h3>Comércio Internacional</h3><p>Para exportar, sua cooperativa precisará obter certificação de qualidade via P&D. Módulo ativo quando o requisito for atendido.</p></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ABA: P&D
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: P&D -->
     <div class="aba" id="aba-pd">
-      <div class="secao-titulo">🔬 P&D & Portfólio</div>
-      <div class="secao-sub">Pesquisa, desenvolvimento e expansão do portfólio de produtos</div>
-      <div class="form-card">
-        <div class="form-card-titulo">🔬 Investimento em P&D</div>
+      <div class="pag-titulo">🔬 P&D & Portfólio</div>
+      <div class="pag-sub">Pesquisa, desenvolvimento e novos produtos</div>
+      <div class="card">
+        <div class="card-titulo">🔬 Investimento em P&D</div>
         <div class="form-grid">
           <div class="form-grupo">
-            <label class="form-label">Valor investido em P&D (R$)</label>
-            <input class="form-input" type="number" min="0" placeholder="0" id="pd-valor"/>
-            <span class="form-hint">Máximo 2 linhas simultâneas. Abandono perde 50% do investido.</span>
+            <label class="form-label">Valor investido (R$)</label>
+            <input class="form-input" type="number" min="0" id="pd-valor" placeholder="0" oninput="sincronizar('pd',this.value);atualizarResumo()"/>
+            <span class="form-hint">Máx. 2 linhas simultâneas. Abandono perde 50%.</span>
           </div>
           <div class="form-grupo">
             <label class="form-label">Linha de P&D</label>
-            <select class="form-select" id="pd-linha">
-              <option value="">Sem investimento esta rodada</option>
+            <select class="form-select" id="pd-linha" onchange="sincronizar('pd_linha',this.value);atualizarResumo()">
+              <option value="">Sem investimento</option>
               <option value="L1">Linha 1 — Embalagem e Identidade</option>
               <option value="L2">Linha 2 — Processo e Qualidade</option>
               <option value="L3">Linha 3 — Mercado e Produto</option>
@@ -907,160 +444,232 @@
           </div>
         </div>
       </div>
-      <div class="em-construcao">
-        <div class="icone-grande">🌳</div>
-        <h3>Árvore de Produtos</h3>
-        <p>Aqui você verá a árvore completa de produtos desbloqueáveis. Produto atual: Suco Tetra Pak 1L. Próximo: Tetra Pak 300ml (investimento: R$15.000 em Linha 1).</p>
-      </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         ABA: DECISÕES
-    ══════════════════════════════════════════════ -->
+    <!-- ABA: DECISÕES -->
     <div class="aba" id="aba-decisoes">
-      <div class="secao-titulo">✍️ Decisões da Rodada 1</div>
-      <div class="secao-sub">Revise tudo e salve. A Carta de Estratégia é obrigatória.</div>
+      <div class="pag-titulo">✍️ Decisões da Rodada 1</div>
+      <div class="pag-sub">Revise o resumo, escreva a Carta de Estratégia e salve.</div>
 
-      <div class="alerta aviso">
-        <span class="alerta-icone">⏰</span>
-        <div><strong>Prazo:</strong> Sexta-feira às 18h · Você pode salvar várias vezes até o prazo.</div>
-      </div>
-      <br/>
+      <div class="alerta aviso"><span>⏰</span><div><strong>Prazo:</strong> Sexta-feira às 18h · Você pode salvar várias vezes até o prazo fechar.</div></div>
 
-      <!-- Resumo das decisões -->
-      <div class="form-card">
-        <div class="form-card-titulo">📋 Resumo das Decisões</div>
-        <div class="form-grid">
-          <div class="form-grupo">
-            <label class="form-label">Compra de laranja (caixas)</label>
-            <input class="form-input" type="number" min="0" placeholder="0" id="dec-compra"/>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Pagamento das compras</label>
-            <select class="form-select" id="dec-pagamento">
-              <option value="AV">À vista (5% desconto)</option>
-              <option value="AP">A prazo (próxima rodada)</option>
-            </select>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Market share desejado (%)</label>
-            <input class="form-input" type="number" min="1" max="100" placeholder="Ex: 15" id="dec-marketshare"/>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Preço de venda (R$/cx)</label>
-            <input class="form-input" type="number" min="1" placeholder="Ex: 44" id="dec-preco"/>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Tipo de recebimento</label>
-            <select class="form-select" id="dec-recebimento">
-              <option value="AV">À vista</option>
-              <option value="AP">A prazo (30 dias)</option>
-              <option value="2x">Parcelado em 2x</option>
-              <option value="3x">Parcelado em 3x</option>
-            </select>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Nível de marketing</label>
-            <select class="form-select" id="dec-marketing">
-              <option value="0">Sem investimento</option>
-              <option value="500">Nível 1 — Básico (R$500)</option>
-              <option value="2000">Nível 2 — Intermediário (R$2.000)</option>
-              <option value="5000">Nível 3 — Intensivo (R$5.000)</option>
-            </select>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Contratar (+) / Demitir (−)</label>
-            <input class="form-input" type="number" min="-10" max="10" placeholder="0" id="dec-rh"/>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Tipo de treinamento</label>
-            <select class="form-select" id="dec-treinamento">
-              <option value="NAO">Não treinar</option>
-              <option value="OP">Operacional (+15% produtividade)</option>
-              <option value="COM">Comercial</option>
-              <option value="QUA">Qualidade</option>
-              <option value="GES">Gestão</option>
-            </select>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Investimento em P&D (R$)</label>
-            <input class="form-input" type="number" min="0" placeholder="0" id="dec-pd"/>
-          </div>
-          <div class="form-grupo">
-            <label class="form-label">Linha de P&D</label>
-            <select class="form-select" id="dec-pd-linha">
-              <option value="">Nenhuma</option>
-              <option value="L1">Linha 1 — Embalagem</option>
-              <option value="L2">Linha 2 — Processo</option>
-              <option value="L3">Linha 3 — Mercado</option>
-            </select>
-          </div>
-        </div>
+      <!-- Resumo automático das decisões -->
+      <div class="resumo-decisoes">
+        <div class="resumo-titulo">📋 Resumo das suas decisões (preenchido automaticamente)</div>
+        <div class="resumo-grid" id="resumo-grid"></div>
       </div>
 
       <!-- Carta de Estratégia -->
-      <div class="carta-container">
+      <div class="carta-wrap">
         <div class="carta-header">
-          <span style="font-size:24px">✍️</span>
+          <span style="font-size:22px">✍️</span>
           <h3>Carta de Estratégia</h3>
           <span class="carta-obrig">Obrigatória</span>
         </div>
-        <textarea class="form-textarea" id="carta-estrategia" maxlength="300"
-          placeholder="Descreva sua estratégia nesta rodada. Ex: Vamos reduzir o preço para R$40 e conquistar 18% do mercado. Contratamos 2 funcionários para ter capacidade. Foco em ganhar posição antes de investir em certificação na próxima rodada."
-          oninput="contarCarta(this)" style="background:white; border-color:#fde68a;"></textarea>
-        <div class="carta-contador" id="carta-contador">0 / 300 caracteres</div>
+        <textarea class="form-textarea" id="carta" maxlength="300"
+          placeholder="Descreva sua estratégia para esta rodada. Ex: Vamos comprar 500 caixas à vista para garantir desconto, praticar preço R$44 com 15% de market share e investir R$2.000 em marketing para crescer a reputação."
+          oninput="contarCarta(this);sincronizar('carta',this.value)" style="background:white;border-color:#fde68a;min-height:110px;"></textarea>
+        <div class="carta-contador" id="carta-cont">0 / 300 caracteres</div>
       </div>
 
       <button class="btn-salvar" onclick="salvarDecisoes()">
         <span>💾 Salvar Decisões da Rodada 1 →</span>
       </button>
 
-      <div id="msg-salvo" style="display:none; margin-top:16px;">
-        <div class="alerta sucesso">
-          <span class="alerta-icone">✅</span>
-          <div><strong>Decisões salvas com sucesso!</strong> Você pode editar e salvar novamente até o prazo. Última atualização: <span id="horario-salvo"></span></div>
-        </div>
+      <div id="msg-salvo" style="display:none;margin-top:14px;">
+        <div class="alerta sucesso"><span>✅</span><div><strong>Decisões salvas!</strong> Última atualização: <span id="horario-salvo"></span></div></div>
       </div>
     </div>
 
   </main>
 </div>
 
+<script src="nav.js"></script>
 <script>
-  function trocarAba(id, el) {
-    document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'));
-    document.getElementById('aba-' + id).classList.add('ativa');
-    if (el) el.classList.add('ativo');
-  }
+// ══════════════════════════════════════════════════
+// ESTADO CENTRAL — todas as decisões em um objeto
+// ══════════════════════════════════════════════════
+const DECISOES = {
+  compra:   '',
+  pagto:    'AV',
+  preco:    '',
+  ms:       '',
+  receb:    'AV',
+  mkt:      '0',
+  rh:       '',
+  treino:   'NAO',
+  pd:       '',
+  pd_linha: '',
+  credito:  '',
+  seguro:   'NAO',
+  sobras:   'REINV',
+  carta:    '',
+};
 
-  function selecionarOpcao(btn, grupo) {
-    btn.closest('.opcoes-grid').querySelectorAll('.opcao-btn').forEach(b => b.classList.remove('selecionado'));
-    btn.classList.add('selecionado');
-  }
+// Rótulos legíveis para o resumo
+const ROTULOS = {
+  compra:   { label:'🍊 Compra laranja', fmt: v => v ? v+' cx' : null },
+  pagto:    { label:'💵 Pagamento',      fmt: v => ({AV:'À vista (-5%)', AP:'A prazo'})[v] || null },
+  preco:    { label:'💰 Preço venda',    fmt: v => v ? 'R$'+v+'/cx' : null },
+  ms:       { label:'📊 Market share',   fmt: v => v ? v+'%' : null },
+  receb:    { label:'📅 Recebimento',    fmt: v => ({AV:'À vista',AP:'A prazo',['2x']:'2x',['3x']:'3x'})[v] || null },
+  mkt:      { label:'📢 Marketing',      fmt: v => v==='0' ? 'Sem invest.' : 'R$'+v },
+  rh:       { label:'👥 RH',             fmt: v => v===''||v==='0' ? 'Sem alteração' : v>0?'+'+v+' contrat.':v+' demissões' },
+  treino:   { label:'🎓 Treinamento',    fmt: v => ({NAO:'Não treinar',OP:'Operacional',COM:'Comercial',QUA:'Qualidade',GES:'Gestão'})[v] },
+  pd:       { label:'🔬 P&D',            fmt: v => v && v!=='0' ? 'R$'+v : 'Sem invest.' },
+  carta:    { label:'✍️ Carta',          fmt: v => v ? '✅ Preenchida ('+v.length+' car.)' : null },
+};
 
-  function contarCarta(el) {
-    const n = el.value.length;
-    const cont = document.getElementById('carta-contador');
-    cont.textContent = n + ' / 300 caracteres';
-    cont.className = 'carta-contador' + (n >= 280 ? ' cheio' : n >= 200 ? ' quase' : '');
-  }
+// ── SINCRONIZAR: atualiza estado central ──
+function sincronizar(campo, valor) {
+  DECISOES[campo] = valor;
+  salvarLocal();
+}
 
-  function salvarDecisoes() {
-    const carta = document.getElementById('carta-estrategia').value.trim();
-    if (!carta) {
-      alert('⚠️ A Carta de Estratégia é obrigatória! Descreva sua estratégia antes de salvar.');
-      document.getElementById('carta-estrategia').focus();
-      return;
+// ── SELECIONAR OPÇÃO VISUAL + SINCRONIZAR ──
+function selecionarOpcaoGrupo(grupo, valor, btn) {
+  // Remove selecionado de todos do grupo
+  const prefixos = {
+    pagto: ['op-pagto-av','op-pagto-ap'],
+    receb: ['op-receb-av','op-receb-ap','op-receb-2x','op-receb-3x'],
+    mkt:   ['op-mkt-0','op-mkt-500','op-mkt-2000','op-mkt-5000'],
+    seguro:['op-seguro-nao','op-seguro-sim'],
+    sobras:['op-sobras-reinv','op-sobras-50','op-sobras-dist'],
+  };
+  if(prefixos[grupo]) prefixos[grupo].forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('selecionado'); });
+  btn.classList.add('selecionado');
+  sincronizar(grupo, valor);
+  atualizarResumo();
+}
+
+// ── ATUALIZAR CAPACIDADE quando RH muda ──
+function atualizarCapacidade() {
+  const rh = parseInt(DECISOES.rh) || 0;
+  const funcNovo = 6 + rh;
+  const cap = funcNovo * 100;
+  document.getElementById('ind-func').textContent = funcNovo;
+  document.getElementById('ind-cap').textContent = cap+' cx';
+  document.getElementById('hint-cap').textContent = cap;
+}
+
+// ── ATUALIZAR RESUMO NA ABA DECISÕES ──
+function atualizarResumo() {
+  const grid = document.getElementById('resumo-grid');
+  if(!grid) return;
+  const campos = ['compra','pagto','preco','ms','receb','mkt','rh','treino','pd','carta'];
+  grid.innerHTML = campos.map(c => {
+    const r = ROTULOS[c];
+    const v = DECISOES[c];
+    const texto = r.fmt(v);
+    return `<div class="resumo-item">
+      <div class="resumo-item-label">${r.label}</div>
+      <div class="resumo-item-valor ${!texto?'vazio':''}">${texto || 'Não definido'}</div>
+    </div>`;
+  }).join('');
+
+  // Atualiza badge da aba Decisões
+  const preenchidos = ['compra','preco','ms','carta'].filter(c => DECISOES[c] && DECISOES[c]!=='');
+  const badge = document.getElementById('badge-decisoes');
+  if(preenchidos.length === 4) {
+    badge.textContent = '✓';
+    badge.style.background = '#16a34a';
+  } else {
+    badge.textContent = (4 - preenchidos.length);
+    badge.style.background = '#e8710a';
+  }
+}
+
+// ── CARTA ──
+function contarCarta(el) {
+  const n = el.value.length;
+  const cont = document.getElementById('carta-cont');
+  cont.textContent = n+' / 300 caracteres';
+  cont.className = 'carta-contador'+(n>=280?' cheio':n>=200?' quase':'');
+}
+
+// ── SALVAR DECISÕES ──
+function salvarDecisoes() {
+  if(!DECISOES.carta || DECISOES.carta.trim()==='') {
+    alert('⚠️ A Carta de Estratégia é obrigatória! Descreva sua estratégia antes de salvar.');
+    document.getElementById('carta').focus();
+    return;
+  }
+  const agora = new Date();
+  const h = agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' de '+agora.toLocaleDateString('pt-BR');
+  DECISOES.timestamp = agora.toISOString();
+  DECISOES.rodada = 1;
+  salvarLocal();
+  document.getElementById('horario-salvo').textContent = h;
+  document.getElementById('msg-salvo').style.display = 'block';
+  document.getElementById('msg-salvo').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ── PERSISTÊNCIA LOCAL ──
+function salvarLocal() {
+  try { localStorage.setItem('citrussim_decisoes_r1', JSON.stringify(DECISOES)); } catch(e){}
+}
+
+function carregarLocal() {
+  try {
+    const salvo = JSON.parse(localStorage.getItem('citrussim_decisoes_r1'));
+    if(!salvo) return;
+    Object.assign(DECISOES, salvo);
+
+    // Restaurar campos
+    if(salvo.compra)   { const el=document.getElementById('est-qtd'); if(el) el.value=salvo.compra; }
+    if(salvo.preco)    { const el=document.getElementById('merc-preco'); if(el) el.value=salvo.preco; }
+    if(salvo.ms)       { const el=document.getElementById('merc-ms'); if(el) el.value=salvo.ms; }
+    if(salvo.rh)       { const el=document.getElementById('rh-alter'); if(el) el.value=salvo.rh; }
+    if(salvo.treino)   { const el=document.getElementById('rh-treino'); if(el) el.value=salvo.treino; }
+    if(salvo.pd)       { const el=document.getElementById('pd-valor'); if(el) el.value=salvo.pd; }
+    if(salvo.pd_linha) { const el=document.getElementById('pd-linha'); if(el) el.value=salvo.pd_linha; }
+    if(salvo.credito)  { const el=document.getElementById('fin-credito'); if(el) el.value=salvo.credito; }
+    if(salvo.carta)    { const el=document.getElementById('carta'); if(el){ el.value=salvo.carta; contarCarta(el); } }
+
+    // Restaurar opções visuais
+    const grupos = {
+      pagto: { prefixos:{AV:'op-pagto-av',AP:'op-pagto-ap'}, val: salvo.pagto },
+      receb: { prefixos:{AV:'op-receb-av',AP:'op-receb-ap','2x':'op-receb-2x','3x':'op-receb-3x'}, val: salvo.receb },
+      mkt:   { prefixos:{'0':'op-mkt-0','500':'op-mkt-500','2000':'op-mkt-2000','5000':'op-mkt-5000'}, val: salvo.mkt },
+      seguro:{ prefixos:{NAO:'op-seguro-nao',SIM:'op-seguro-sim'}, val: salvo.seguro },
+      sobras:{ prefixos:{REINV:'op-sobras-reinv','50':'op-sobras-50',DIST:'op-sobras-dist'}, val: salvo.sobras },
+    };
+    Object.values(grupos).forEach(g => {
+      Object.values(g.prefixos).forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('selecionado'); });
+      const alvo = g.prefixos[g.val];
+      if(alvo) { const el=document.getElementById(alvo); if(el) el.classList.add('selecionado'); }
+    });
+
+    atualizarCapacidade();
+    atualizarResumo();
+  } catch(e){}
+}
+
+// ── NOME DA COOPERATIVA ──
+function carregarSessao() {
+  try {
+    const s = JSON.parse(localStorage.getItem('citrussim_sessao'));
+    if(s && s.nome) {
+      document.getElementById('coop-nome').textContent = s.nome;
+      const nomeEl = document.getElementById('rank-minha-coop');
+      if(nomeEl) nomeEl.textContent = '★ '+s.nome.replace('Cooperativa ','');
     }
-    const agora = new Date();
-    const horario = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) +
-                    ' de ' + agora.toLocaleDateString('pt-BR');
-    document.getElementById('horario-salvo').textContent = horario;
-    document.getElementById('msg-salvo').style.display = 'block';
-    document.getElementById('msg-salvo').scrollIntoView({behavior:'smooth', block:'nearest'});
-  }
+  } catch(e){}
+}
+
+// ── NAVEGAÇÃO ──
+function trocarAba(id, el) {
+  document.querySelectorAll('.aba').forEach(a=>a.classList.remove('ativa'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('ativo'));
+  document.getElementById('aba-'+id).classList.add('ativa');
+  if(el) el.classList.add('ativo');
+  if(id==='decisoes') atualizarResumo();
+}
+
+// ── INIT ──
+carregarSessao();
+carregarLocal();
+atualizarResumo();
 </script>
-  <script src="nav.js"></script>
 </body>
 </html>
