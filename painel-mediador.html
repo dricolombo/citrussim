@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CítrusSim — Painel do Mediador</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --verde-escuro: #1a4a2e;
+      --verde-medio: #2d6b45;
+      --verde-claro: #4a9463;
+      --laranja: #e8710a;
+      --laranja-claro: #f59332;
+      --amarelo: #f7c844;
+      --creme: #fdf6e8;
+      --fundo: #f2efe8;
+      --branco: #ffffff;
+      --texto: #1a2e1a;
+      --texto-suave: #5a7060;
+      --borda: #e2ddd4;
+      --vermelho: #dc2626;
+      --azul: #2563eb;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',sans-serif; background:var(--fundo); color:var(--texto); min-height:100vh; }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--verde-escuro);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+    .header-logo { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--creme); }
+    .header-logo span { color:var(--laranja-claro); }
+    .header-right { display:flex; align-items:center; gap:16px; }
+    .header-rodada {
+      background: var(--laranja);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .header-user { font-size:13px; color:rgba(253,246,232,0.7); }
+    .header-user strong { color:var(--creme); }
+
+    /* ── LAYOUT ── */
+    .layout { display:grid; grid-template-columns:200px 1fr; min-height:calc(100vh - 60px); }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--branco);
+      border-right: 1px solid var(--borda);
+      padding: 16px 0;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 20px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      font-size: 13px; font-weight: 500;
+      color: var(--texto-suave);
+      transition: all 0.15s;
+    }
+    .nav-item:hover { background:var(--fundo); color:var(--verde-escuro); }
+    .nav-item.ativo { background:#edf7f0; color:var(--verde-escuro); border-left-color:var(--verde-medio); font-weight:600; }
+    .nav-item .icone { font-size:17px; width:22px; text-align:center; }
+    .sidebar-divisor { height:1px; background:var(--borda); margin:8px 16px; }
+    .sidebar-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:2px; color:#bbb; padding:12px 20px 6px; }
+
+    /* ── CONTEÚDO ── */
+    .conteudo { padding:24px 28px; overflow-y:auto; }
+    .aba { display:none; }
+    .aba.ativa { display:block; animation:fadeIn 0.2s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── TÍTULOS ── */
+    .pag-titulo { font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--verde-escuro); margin-bottom:4px; }
+    .pag-sub { font-size:13px; color:var(--texto-suave); margin-bottom:24px; }
+
+    /* ── CARDS RESUMO ── */
+    .resumo-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+    .resumo-card {
+      background:var(--branco); border-radius:12px; padding:18px 20px;
+      border:1px solid var(--borda); box-shadow:0 1px 6px rgba(0,0,0,0.04);
+    }
+    .resumo-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--texto-suave); margin-bottom:6px; }
+    .resumo-valor { font-family:'Playfair Display',serif; font-size:28px; font-weight:700; color:var(--verde-escuro); line-height:1; margin-bottom:4px; }
+    .resumo-detalhe { font-size:12px; color:var(--texto-suave); }
+
+    /* ── MAPA DE CALOR ── */
+    .mapa-card {
+      background:var(--branco); border-radius:14px; padding:22px;
+      border:1px solid var(--borda); margin-bottom:24px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.04);
+    }
+    .mapa-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+    .mapa-titulo { font-size:14px; font-weight:700; color:var(--verde-escuro); }
+    .mapa-legenda { display:flex; align-items:center; gap:16px; font-size:11px; color:var(--texto-suave); }
+    .leg-item { display:flex; align-items:center; gap:5px; }
+    .leg-cor { width:12px; height:12px; border-radius:3px; }
+
+    .mapa-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .mapa-table th {
+      text-align:center; padding:8px 6px;
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:1px; color:#999; border-bottom:2px solid var(--fundo);
+      white-space:nowrap;
+    }
+    .mapa-table th.col-nome { text-align:left; padding-left:12px; min-width:180px; }
+    .mapa-table td { padding:6px 6px; border-bottom:1px solid var(--fundo); }
+    .mapa-table td.col-nome {
+      padding-left:12px; font-weight:600; font-size:13px;
+      color:var(--verde-escuro); white-space:nowrap;
+    }
+    .mapa-table tr:last-child td { border-bottom:none; }
+    .mapa-table tr:hover td { background:#fafaf8; }
+
+    .celula {
+      display:flex; align-items:center; justify-content:center;
+      padding:6px 8px; border-radius:6px;
+      font-size:12px; font-weight:600;
+      min-width:70px; text-align:center;
+    }
+    .c-verde-forte  { background:#dcfce7; color:#166534; }
+    .c-verde-medio  { background:#bbf7d0; color:#166534; }
+    .c-amarelo      { background:#fef9c3; color:#854d0e; }
+    .c-laranja      { background:#ffedd5; color:#9a3412; }
+    .c-vermelho     { background:#fee2e2; color:#991b1b; }
+    .c-cinza        { background:#f3f4f6; color:#9ca3af; }
+
+    /* Status de decisão */
+    .status-enviou  { background:#dcfce7; color:#166534; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:700; white-space:nowrap; }
+    .status-pendente{ background:#fef9c3; color:#854d0e; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:700; white-space:nowrap; }
+    .status-atrasado{ background:#fee2e2; color:#991b1b; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:700; white-space:nowrap; }
+
+    /* ── RANKING COMPLETO ── */
+    .ranking-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .ranking-table th {
+      text-align:left; padding:10px 14px;
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:1px; color:#999;
+      border-bottom:2px solid var(--fundo);
+      background:var(--branco);
+    }
+    .ranking-table td { padding:12px 14px; border-bottom:1px solid var(--fundo); vertical-align:middle; }
+    .ranking-table tr:hover td { background:#fafaf8; }
+    .rank-pos {
+      width:28px; height:28px; border-radius:50%;
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700;
+    }
+    .pos-1{background:#fef9c3;color:#854d0e;}
+    .pos-2{background:#f1f5f9;color:#475569;}
+    .pos-3{background:#fef3e2;color:#92400e;}
+    .pos-n{background:#f9fafb;color:#9ca3af;}
+    .barra-idc-wrap { width:100px; height:8px; background:#f0ece4; border-radius:4px; display:inline-block; vertical-align:middle; margin-left:8px; }
+    .barra-idc { height:8px; border-radius:4px; background:var(--verde-claro); }
+
+    /* ── CONTROLE DE RODADA ── */
+    .rodada-status-card {
+      background: linear-gradient(135deg, var(--verde-escuro), #2d5a3e);
+      border-radius:14px; padding:24px 28px; color:var(--creme);
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:20px;
+    }
+    .rodada-info h2 { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:6px; }
+    .rodada-info p { font-size:13px; opacity:0.7; }
+    .rodada-acoes { display:flex; gap:10px; }
+    .btn-acao {
+      padding:10px 20px; border-radius:8px; border:none;
+      font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+      cursor:pointer; transition:all 0.2s;
+    }
+    .btn-verde  { background:var(--verde-claro); color:white; }
+    .btn-verde:hover { background:#3d8054; transform:translateY(-1px); }
+    .btn-laranja{ background:var(--laranja); color:white; }
+    .btn-laranja:hover { background:#c95e08; transform:translateY(-1px); }
+    .btn-cinza  { background:rgba(255,255,255,0.15); color:var(--creme); border:1px solid rgba(255,255,255,0.2); }
+    .btn-cinza:hover { background:rgba(255,255,255,0.25); }
+    .btn-vermelho { background:var(--vermelho); color:white; }
+    .btn-vermelho:hover { background:#b91c1c; }
+
+    .decisoes-grid {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px;
+    }
+    .dec-card {
+      background:var(--branco); border-radius:12px; padding:16px;
+      border:1px solid var(--borda); text-align:center;
+    }
+    .dec-card-nome { font-size:12px; font-weight:600; color:var(--verde-escuro); margin-bottom:8px; line-height:1.3; min-height:32px; display:flex; align-items:center; justify-content:center; }
+    .dec-card-status { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; display:inline-block; }
+    .dec-card-hora { font-size:10px; color:#bbb; margin-top:4px; }
+
+    /* ── GAZETA ── */
+    .gazeta-form { background:var(--branco); border-radius:14px; padding:24px; border:1px solid var(--borda); }
+    .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+    .form-grupo { display:flex; flex-direction:column; gap:5px; }
+    .form-grupo.largo { grid-column:1/-1; }
+    .form-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--texto-suave); }
+    .form-input, .form-select, .form-textarea {
+      padding:10px 13px; border:2px solid var(--borda); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:14px; color:var(--texto);
+      background:var(--branco); outline:none; transition:border-color 0.2s;
+    }
+    .form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--verde-medio); }
+    .form-textarea { resize:vertical; min-height:90px; }
+    .form-hint { font-size:11px; color:#bbb; }
+
+    .gazeta-preview {
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      border:2px solid #fde68a; border-radius:14px; padding:24px;
+      margin-top:20px; display:none;
+    }
+    .gazeta-preview.visivel { display:block; animation:fadeIn 0.3s ease; }
+    .gazeta-cabecalho { text-align:center; border-bottom:3px double #d97706; padding-bottom:16px; margin-bottom:16px; }
+    .gazeta-nome { font-family:'Playfair Display',serif; font-size:28px; font-weight:900; color:#92400e; }
+    .gazeta-edicao { font-size:11px; color:#a16207; letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
+    .gazeta-manchete-prev { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:#1a2e1a; margin-bottom:10px; line-height:1.3; }
+    .gazeta-corpo { font-size:13px; color:#444; line-height:1.7; margin-bottom:16px; }
+    .gazeta-painel-mercado {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+      background:white; border-radius:10px; padding:16px; border:1px solid #fde68a;
+    }
+    .mercado-item { text-align:center; }
+    .mercado-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:#a16207; margin-bottom:4px; }
+    .mercado-valor { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:#1a4a2e; }
+
+    /* ── EVENTOS ── */
+    .eventos-banco { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+    .evento-card {
+      background:var(--branco); border-radius:12px; padding:18px;
+      border:1px solid var(--borda); cursor:pointer; transition:all 0.2s;
+      border-left:4px solid transparent;
+    }
+    .evento-card:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,0.08); }
+    .evento-card.geo    { border-left-color:#2563eb; }
+    .evento-card.clim   { border-left-color:#0891b2; }
+    .evento-card.merc   { border-left-color:#d97706; }
+    .evento-card.dem    { border-left-color:#7c3aed; }
+    .evento-card.fin    { border-left-color:#dc2626; }
+    .evento-card.pos    { border-left-color:#16a34a; }
+    .evento-tag {
+      font-size:10px; font-weight:700; text-transform:uppercase;
+      letter-spacing:1px; margin-bottom:8px; display:inline-block;
+      padding:2px 8px; border-radius:4px;
+    }
+    .tag-geo  { background:#dbeafe; color:#1e40af; }
+    .tag-clim { background:#e0f2fe; color:#0c4a6e; }
+    .tag-merc { background:#fef3c7; color:#92400e; }
+    .tag-dem  { background:#ede9fe; color:#4c1d95; }
+    .tag-fin  { background:#fee2e2; color:#991b1b; }
+    .tag-pos  { background:#dcfce7; color:#166534; }
+    .evento-titulo { font-size:13px; font-weight:700; color:var(--texto); margin-bottom:6px; line-height:1.3; }
+    .evento-desc { font-size:12px; color:var(--texto-suave); line-height:1.4; margin-bottom:10px; }
+    .evento-impacto { font-size:11px; font-weight:600; }
+    .evento-intensidade { display:flex; gap:6px; margin-top:10px; }
+    .int-btn {
+      flex:1; padding:5px; border:1px solid var(--borda); border-radius:5px;
+      font-size:10px; font-weight:600; cursor:pointer; text-align:center;
+      background:white; font-family:'DM Sans',sans-serif; transition:all 0.15s;
+    }
+    .int-btn:hover { background:var(--fundo); }
+    .int-btn.mod { border-color:#d97706; color:#d97706; }
+    .int-btn.sev { border-color:#dc2626; color:#dc2626; }
+    .int-btn.cri { border-color:#7f1d1d; color:#7f1d1d; background:#fee2e2; }
+
+    /* ── NOTIFICAÇÃO ── */
+    .notif {
+      position:fixed; bottom:24px; right:24px;
+      background:var(--verde-escuro); color:var(--creme);
+      padding:14px 20px; border-radius:12px;
+      font-size:14px; font-weight:500;
+      box-shadow:0 8px 24px rgba(0,0,0,0.2);
+      transform:translateY(100px); opacity:0;
+      transition:all 0.3s ease; z-index:999;
+      display:flex; align-items:center; gap:10px;
+    }
+    .notif.visivel { transform:translateY(0); opacity:1; }
+
+    /* ── ALERTAS ── */
+    .alerta { display:flex; align-items:flex-start; gap:10px; padding:12px 16px; border-radius:10px; margin-bottom:12px; font-size:13px; }
+    .alerta-icone { font-size:16px; flex-shrink:0; }
+    .alerta.aviso  { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
+    .alerta.info   { background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; }
+    .alerta.sucesso{ background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; }
+
+    .secao-card { background:var(--branco); border-radius:14px; padding:22px; border:1px solid var(--borda); margin-bottom:20px; }
+    .secao-card-titulo { font-size:14px; font-weight:700; color:var(--verde-escuro); margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--fundo); display:flex; align-items:center; gap:8px; }
+
+    .btn-publicar {
+      width:100%; padding:14px; background:var(--verde-escuro); color:var(--creme);
+      border:none; border-radius:10px; font-family:'DM Sans',sans-serif;
+      font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s;
+      margin-top:8px; position:relative; overflow:hidden;
+    }
+    .btn-publicar::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--laranja),var(--laranja-claro)); opacity:0; transition:opacity 0.3s; }
+    .btn-publicar:hover::before { opacity:1; }
+    .btn-publicar:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(232,113,10,0.3); }
+    .btn-publicar span { position:relative; z-index:1; }
+
+    @media(max-width:900px) {
+      .layout { grid-template-columns:1fr; }
+      .sidebar { display:none; }
+      .resumo-grid { grid-template-columns:repeat(2,1fr); }
+      .decisoes-grid { grid-template-columns:repeat(2,1fr); }
+      .eventos-banco { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">Cítrus<span>Sim</span> <span style="font-size:12px;opacity:0.5;font-family:'DM Sans',sans-serif;font-weight:400;margin-left:8px;">MEDIADOR</span></div>
+  <div class="header-right">
+    <span class="header-rodada">🌾 Rodada 1 — Aberta</span>
+    <span class="header-user">Olá, <strong>Profa. Adriana</strong></span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-label">Visão Geral</div>
+    <div class="nav-item ativo" onclick="trocarAba('visao', this)">
+      <span class="icone">🗺️</span> Mapa Geral
+    </div>
+    <div class="nav-item" onclick="trocarAba('ranking', this)">
+      <span class="icone">🏆</span> Ranking
+    </div>
+    <div class="sidebar-divisor"></div>
+    <div class="sidebar-label">Gestão</div>
+    <div class="nav-item" onclick="trocarAba('rodada', this)">
+      <span class="icone">🎮</span> Controle de Rodada
+    </div>
+    <div class="nav-item" onclick="trocarAba('gazeta', this)">
+      <span class="icone">📰</span> Gazeta do Campo
+    </div>
+    <div class="nav-item" onclick="trocarAba('eventos', this)">
+      <span class="icone">⚡</span> Eventos Externos
+    </div>
+  </nav>
+
+  <!-- CONTEÚDO -->
+  <main class="conteudo">
+
+    <!-- ══════════════════════════════════════════
+         ABA: MAPA GERAL (mapa de calor)
+    ══════════════════════════════════════════ -->
+    <div class="aba ativa" id="aba-visao">
+      <div class="pag-titulo">🗺️ Mapa Geral do Torneio</div>
+      <div class="pag-sub">Visão consolidada de todas as cooperativas — Rodada 1</div>
+
+      <!-- Resumo rápido -->
+      <div class="resumo-grid">
+        <div class="resumo-card">
+          <div class="resumo-label">📋 Decisões enviadas</div>
+          <div class="resumo-valor">3<span style="font-size:16px;color:#aaa">/8</span></div>
+          <div class="resumo-detalhe">5 equipes pendentes</div>
+        </div>
+        <div class="resumo-card">
+          <div class="resumo-label">⏰ Prazo</div>
+          <div class="resumo-valor" style="font-size:20px;color:var(--laranja)">Sex 18h</div>
+          <div class="resumo-detalhe">Rodada 1 em andamento</div>
+        </div>
+        <div class="resumo-card">
+          <div class="resumo-label">⚠️ Equipes em alerta</div>
+          <div class="resumo-valor" style="color:var(--vermelho)">0</div>
+          <div class="resumo-detalhe">Todas com caixa positivo</div>
+        </div>
+        <div class="resumo-card">
+          <div class="resumo-label">🏆 Líder atual</div>
+          <div class="resumo-valor" style="font-size:14px;padding-top:4px">Sol do Campo</div>
+          <div class="resumo-detalhe">IDC: 82,4 pts</div>
+        </div>
+      </div>
+
+      <!-- Mapa de calor -->
+      <div class="mapa-card">
+        <div class="mapa-header">
+          <span class="mapa-titulo">🌡️ Mapa de Calor — Indicadores por Cooperativa</span>
+          <div class="mapa-legenda">
+            <div class="leg-item"><div class="leg-cor" style="background:#dcfce7"></div> Ótimo</div>
+            <div class="leg-item"><div class="leg-cor" style="background:#fef9c3"></div> Regular</div>
+            <div class="leg-item"><div class="leg-cor" style="background:#ffedd5"></div> Atenção</div>
+            <div class="leg-item"><div class="leg-cor" style="background:#fee2e2"></div> Crítico</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="mapa-table">
+            <thead>
+              <tr>
+                <th class="col-nome">#  Cooperativa</th>
+                <th>IDC</th>
+                <th>Caixa</th>
+                <th>Reputação</th>
+                <th>Market Share</th>
+                <th>Margem</th>
+                <th>Funcionários</th>
+                <th>P&D</th>
+                <th>Decisão R1</th>
+              </tr>
+            </thead>
+            <tbody id="mapa-tbody">
+              <!-- preenchido por JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="alerta info">
+        <span class="alerta-icone">💡</span>
+        <div>Os dados do mapa serão calculados automaticamente após o processamento de cada rodada. Por enquanto, exibindo valores iniciais de referência.</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         ABA: RANKING
+    ══════════════════════════════════════════ -->
+    <div class="aba" id="aba-ranking">
+      <div class="pag-titulo">🏆 Ranking IDC</div>
+      <div class="pag-sub">Classificação geral — Índice de Desempenho Cooperativo</div>
+
+      <div class="secao-card">
+        <div class="secao-card-titulo">📊 Composição do IDC</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:13px;">
+          <div style="background:var(--fundo);border-radius:8px;padding:12px;">
+            <div style="font-weight:700;color:var(--verde-escuro);margin-bottom:4px;">26% — Resultado Financeiro</div>
+            <div style="color:var(--texto-suave);font-size:12px;">Lucro líquido e margem da rodada</div>
+          </div>
+          <div style="background:var(--fundo);border-radius:8px;padding:12px;">
+            <div style="font-weight:700;color:var(--verde-escuro);margin-bottom:4px;">21% — Saúde Financeira</div>
+            <div style="color:var(--texto-suave);font-size:12px;">Solvência e fluxo de caixa</div>
+          </div>
+          <div style="background:var(--fundo);border-radius:8px;padding:12px;">
+            <div style="font-weight:700;color:var(--verde-escuro);margin-bottom:4px;">21% — Reputação</div>
+            <div style="color:var(--texto-suave);font-size:12px;">Histórico acumulado (0-100)</div>
+          </div>
+          <div style="background:var(--fundo);border-radius:8px;padding:12px;">
+            <div style="font-weight:700;color:var(--verde-escuro);margin-bottom:4px;">17% — Gestão de Estoque</div>
+            <div style="color:var(--texto-suave);font-size:12px;">Rupturas e armazenagem</div>
+          </div>
+          <div style="background:var(--fundo);border-radius:8px;padding:12px;">
+            <div style="font-weight:700;color:var(--verde-escuro);margin-bottom:4px;">10% — Inovação / P&D</div>
+            <div style="color:var(--texto-suave);font-size:12px;">Portfólio e sustentabilidade</div>
+          </div>
+          <div style="background:var(--fundo);border-radius:8px;padding:12px;">
+            <div style="font-weight:700;color:var(--verde-escuro);margin-bottom:4px;">5% — Missões Pedagógicas</div>
+            <div style="color:var(--texto-suave);font-size:12px;">Bônus por rodada</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="secao-card">
+        <div class="secao-card-titulo">🥇 Classificação Geral</div>
+        <table class="ranking-table" id="ranking-table">
+          <thead>
+            <tr>
+              <th style="width:50px">#</th>
+              <th>Cooperativa</th>
+              <th>IDC Total</th>
+              <th>Fin.</th>
+              <th>Saúde</th>
+              <th>Reputação</th>
+              <th>Estoque</th>
+              <th>Inovação</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         ABA: CONTROLE DE RODADA
+    ══════════════════════════════════════════ -->
+    <div class="aba" id="aba-rodada">
+      <div class="pag-titulo">🎮 Controle de Rodada</div>
+      <div class="pag-sub">Gerencie o ciclo completo de cada rodada do torneio</div>
+
+      <!-- Status atual -->
+      <div class="rodada-status-card">
+        <div class="rodada-info">
+          <h2>🌾 Rodada 1 — Em andamento</h2>
+          <p>Aberta em: 27/05/2026 às 09:00 · Prazo: 30/05/2026 às 18:00</p>
+          <p style="margin-top:6px;opacity:0.6;font-size:12px;">Decisões recebidas: 3 de 8 equipes</p>
+        </div>
+        <div class="rodada-acoes">
+          <button class="btn-acao btn-cinza" onclick="notificar('📣 Lembrete enviado para todas as equipes!')">📣 Lembrar equipes</button>
+          <button class="btn-acao btn-vermelho" onclick="confirmarFechamento()">🔒 Fechar rodada</button>
+          <button class="btn-acao btn-laranja" onclick="notificar('⚙️ Processamento iniciado! Aguarde os resultados.')">⚙️ Processar resultados</button>
+        </div>
+      </div>
+
+      <!-- Status de decisões por equipe -->
+      <div class="secao-card">
+        <div class="secao-card-titulo">📋 Status das Decisões — Rodada 1</div>
+        <div class="decisoes-grid" id="decisoes-grid">
+          <!-- preenchido por JS -->
+        </div>
+      </div>
+
+      <!-- Histórico de rodadas -->
+      <div class="secao-card">
+        <div class="secao-card-titulo">📅 Histórico de Rodadas</div>
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th>Rodada</th>
+              <th>Status</th>
+              <th>Abertura</th>
+              <th>Encerramento</th>
+              <th>Decisões</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Rodada 0</strong> — Tutorial</td>
+              <td><span class="status-enviou">✅ Concluída</span></td>
+              <td>20/05/2026</td>
+              <td>22/05/2026</td>
+              <td>8/8</td>
+              <td><button class="btn-acao btn-cinza" style="font-size:11px;padding:5px 12px;" onclick="notificar('📊 Resultados da Rodada 0 carregados')">Ver resultados</button></td>
+            </tr>
+            <tr>
+              <td><strong>Rodada 1</strong></td>
+              <td><span class="status-pendente">🟡 Em andamento</span></td>
+              <td>27/05/2026</td>
+              <td>30/05/2026</td>
+              <td>3/8</td>
+              <td><span style="font-size:12px;color:#aaa">Aguardando encerramento</span></td>
+            </tr>
+            <tr>
+              <td><strong>Rodada 2</strong></td>
+              <td><span class="status-atrasado" style="background:#f1f5f9;color:#94a3b8;">⬜ Não iniciada</span></td>
+              <td>—</td><td>—</td><td>—</td>
+              <td><button class="btn-acao btn-verde" style="font-size:11px;padding:5px 12px;" onclick="notificar('🟢 Rodada 2 programada!')">Programar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         ABA: GAZETA DO CAMPO
+    ══════════════════════════════════════════ -->
+    <div class="aba" id="aba-gazeta">
+      <div class="pag-titulo">📰 Gazeta do Campo</div>
+      <div class="pag-sub">Preencha e publique o jornal antes de cada rodada</div>
+
+      <div class="gazeta-form">
+        <div class="secao-card-titulo" style="font-size:14px;font-weight:700;color:var(--verde-escuro);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--fundo);display:flex;align-items:center;gap:8px;">📋 Dados da Edição</div>
+
+        <div class="form-grid-2">
+          <div class="form-grupo">
+            <label class="form-label">Número da rodada</label>
+            <select class="form-select" id="gaz-rodada">
+              <option>Rodada 1</option><option>Rodada 2</option><option>Rodada 3</option>
+              <option>Rodada 4</option><option>Rodada 5</option><option>Rodada 6</option>
+            </select>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Data de publicação</label>
+            <input class="form-input" type="date" id="gaz-data"/>
+          </div>
+          <div class="form-grupo largo">
+            <label class="form-label">Manchete principal</label>
+            <input class="form-input" type="text" id="gaz-manchete" placeholder="Ex: Geada atinge laranjais do noroeste paulista"/>
+          </div>
+          <div class="form-grupo largo">
+            <label class="form-label">Corpo da notícia principal</label>
+            <textarea class="form-textarea" id="gaz-corpo" placeholder="Descreva o contexto do cenário desta rodada. O que está acontecendo no mercado? Que fatores externos as equipes devem considerar?"></textarea>
+          </div>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;color:var(--verde-escuro);margin:20px 0 14px;padding-top:16px;border-top:1px solid var(--fundo);">📊 Painel de Mercado</div>
+        <div class="form-grid-3">
+          <div class="form-grupo">
+            <label class="form-label">Preço da laranja (R$/cx)</label>
+            <input class="form-input" type="number" id="gaz-preco-laranja" placeholder="18,00"/>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Preço referência suco (R$/cx)</label>
+            <input class="form-input" type="number" id="gaz-preco-suco" placeholder="42,00"/>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Mercado total (caixas)</label>
+            <input class="form-input" type="number" id="gaz-mercado" placeholder="6400"/>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Câmbio (R$/USD)</label>
+            <input class="form-input" type="number" id="gaz-cambio" placeholder="5,80"/>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Taxa de juros (%/mês)</label>
+            <input class="form-input" type="number" id="gaz-juros" placeholder="2,0"/>
+          </div>
+          <div class="form-grupo">
+            <label class="form-label">Missão pedagógica (opcional)</label>
+            <input class="form-input" type="text" id="gaz-missao" placeholder="Ex: Foco em gestão de pessoas"/>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button class="btn-publicar" style="flex:1" onclick="previewGazeta()">
+            <span>👁️ Visualizar prévia</span>
+          </button>
+          <button class="btn-publicar" style="flex:1;background:var(--laranja);" onclick="publicarGazeta()">
+            <span>📢 Publicar para as equipes →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview da Gazeta -->
+      <div class="gazeta-preview" id="gazeta-preview">
+        <div class="gazeta-cabecalho">
+          <div class="gazeta-nome">🍊 Gazeta do Campo</div>
+          <div class="gazeta-edicao" id="prev-edicao">Edição · Rodada 1</div>
+        </div>
+        <div class="gazeta-manchete-prev" id="prev-manchete">—</div>
+        <div class="gazeta-corpo" id="prev-corpo">—</div>
+        <div class="gazeta-painel-mercado">
+          <div class="mercado-item">
+            <div class="mercado-label">🍊 Laranja</div>
+            <div class="mercado-valor" id="prev-laranja">R$ —</div>
+          </div>
+          <div class="mercado-item">
+            <div class="mercado-label">🥤 Suco Ref.</div>
+            <div class="mercado-valor" id="prev-suco">R$ —</div>
+          </div>
+          <div class="mercado-item">
+            <div class="mercado-label">📦 Mercado</div>
+            <div class="mercado-valor" id="prev-mercado">— cx</div>
+          </div>
+          <div class="mercado-item">
+            <div class="mercado-label">💵 Câmbio</div>
+            <div class="mercado-valor" id="prev-cambio">R$ —</div>
+          </div>
+          <div class="mercado-item">
+            <div class="mercado-label">🏦 Juros</div>
+            <div class="mercado-valor" id="prev-juros">—%</div>
+          </div>
+          <div class="mercado-item">
+            <div class="mercado-label">🎯 Missão</div>
+            <div class="mercado-valor" style="font-size:13px;" id="prev-missao">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         ABA: EVENTOS EXTERNOS
+    ══════════════════════════════════════════ -->
+    <div class="aba" id="aba-eventos">
+      <div class="pag-titulo">⚡ Eventos Externos</div>
+      <div class="pag-sub">Selecione um evento e aplique à rodada atual — escolha a intensidade</div>
+
+      <div class="alerta aviso">
+        <span class="alerta-icone">⚠️</span>
+        <div>Eventos afetam <strong>todas as equipes</strong> da rodada. Publique na Gazeta do Campo junto com o evento escolhido.</div>
+      </div>
+
+      <div class="eventos-banco">
+
+        <div class="evento-card geo">
+          <span class="evento-tag tag-geo">🌐 Geopolítico</span>
+          <div class="evento-titulo">Tensão comercial entre EUA e China</div>
+          <div class="evento-desc">Tarifas de importação aumentam. Mercado de suco concentrado em pressão.</div>
+          <div class="evento-impacto" style="color:#2563eb">↑ Câmbio · ↓ Demanda externa</div>
+          <div class="evento-intensidade">
+            <button class="int-btn mod" onclick="aplicarEvento('Tensão EUA-China', 'Moderado')">Moderado</button>
+            <button class="int-btn sev" onclick="aplicarEvento('Tensão EUA-China', 'Severo')">Severo</button>
+            <button class="int-btn cri" onclick="aplicarEvento('Tensão EUA-China', 'Crítico')">Crítico</button>
+          </div>
+        </div>
+
+        <div class="evento-card clim">
+          <span class="evento-tag tag-clim">🌦️ Climático</span>
+          <div class="evento-titulo">Geada atinge laranjais do noroeste</div>
+          <div class="evento-desc">Perda de safra na região. Preço da matéria-prima sobe.</div>
+          <div class="evento-impacto" style="color:#0c4a6e">↑ Preço laranja · Seguro ativa cobertura</div>
+          <div class="evento-intensidade">
+            <button class="int-btn mod" onclick="aplicarEvento('Geada', 'Moderado')">Moderado</button>
+            <button class="int-btn sev" onclick="aplicarEvento('Geada', 'Severo')">Severo</button>
+            <button class="int-btn cri" onclick="aplicarEvento('Geada', 'Crítico')">Crítico</button>
+          </div>
+        </div>
+
+        <div class="evento-card merc">
+          <span class="evento-tag tag-merc">📈 Mercado</span>
+          <div class="evento-titulo">Alta no preço do suco no varejo</div>
+          <div class="evento-desc">Supermercados aumentam preço de prateleira. Janela de oportunidade.</div>
+          <div class="evento-impacto" style="color:#92400e">↑ Preço referência · ↑ Demanda</div>
+          <div class="evento-intensidade">
+            <button class="int-btn mod" onclick="aplicarEvento('Alta no varejo', 'Moderado')">Moderado</button>
+            <button class="int-btn sev" onclick="aplicarEvento('Alta no varejo', 'Severo')">Severo</button>
+            <button class="int-btn cri" onclick="aplicarEvento('Alta no varejo', 'Crítico')">Crítico</button>
+          </div>
+        </div>
+
+        <div class="evento-card dem">
+          <span class="evento-tag tag-dem">🛒 Demanda</span>
+          <div class="evento-titulo">Campanha nacional "Beba suco natural"</div>
+          <div class="evento-desc">Mídia nacional impulsiona consumo de sucos. Demanda cresce acima do esperado.</div>
+          <div class="evento-impacto" style="color:#4c1d95">↑ Mercado total +10% a +25%</div>
+          <div class="evento-intensidade">
+            <button class="int-btn mod" onclick="aplicarEvento('Campanha nacional', 'Moderado')">Moderado</button>
+            <button class="int-btn sev" onclick="aplicarEvento('Campanha nacional', 'Severo')">Severo</button>
+            <button class="int-btn cri" onclick="aplicarEvento('Campanha nacional', 'Crítico')">Crítico</button>
+          </div>
+        </div>
+
+        <div class="evento-card fin">
+          <span class="evento-tag tag-fin">💸 Financeiro</span>
+          <div class="evento-titulo">Alta na taxa Selic</div>
+          <div class="evento-desc">Banco Central eleva juros. Custo do crédito aumenta para todas as cooperativas.</div>
+          <div class="evento-impacto" style="color:#991b1b">↑ Taxa juros capital de giro</div>
+          <div class="evento-intensidade">
+            <button class="int-btn mod" onclick="aplicarEvento('Alta Selic', 'Moderado')">Moderado</button>
+            <button class="int-btn sev" onclick="aplicarEvento('Alta Selic', 'Severo')">Severo</button>
+            <button class="int-btn cri" onclick="aplicarEvento('Alta Selic', 'Crítico')">Crítico</button>
+          </div>
+        </div>
+
+        <div class="evento-card pos">
+          <span class="evento-tag tag-pos">🌟 Positivo</span>
+          <div class="evento-titulo">Programa governamental de fomento</div>
+          <div class="evento-desc">Governo lança linha de crédito subsidiada para cooperativas citrícolas.</div>
+          <div class="evento-impacto" style="color:#166534">↓ Taxa crédito · ↑ Reputação setor</div>
+          <div class="evento-intensidade">
+            <button class="int-btn mod" onclick="aplicarEvento('Fomento governamental', 'Moderado')">Moderado</button>
+            <button class="int-btn sev" onclick="aplicarEvento('Fomento governamental', 'Amplo')">Amplo</button>
+            <button class="int-btn cri" onclick="aplicarEvento('Fomento governamental', 'Total')">Total</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="secao-card" id="evento-selecionado" style="display:none">
+        <div class="secao-card-titulo">⚡ Evento selecionado</div>
+        <div id="evento-sel-texto" style="font-size:14px;color:var(--verde-escuro);margin-bottom:16px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-publicar" style="flex:1" onclick="notificar('✅ Evento aplicado à Rodada 1! Publique na Gazeta.')">
+            <span>✅ Confirmar e aplicar à Rodada 1</span>
+          </button>
+          <button class="btn-publicar" style="flex:1;background:#6b7280;" onclick="document.getElementById('evento-selecionado').style.display='none'">
+            <span>✕ Cancelar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Notificação flutuante -->
+<div class="notif" id="notif"></div>
+
+<script>
+  // ── DADOS DAS EQUIPES ──
+  const equipes = [
+    { nome:'Cooperativa Sol do Campo',        idc:82.4, caixa:62000, rep:68, ms:16, margem:22, func:7,  pd:1, decisao:'enviou',   hora:'14:32' },
+    { nome:'Cooperativa Vale Citrícola',       idc:75.1, caixa:54000, rep:62, ms:14, margem:18, func:6,  pd:0, decisao:'enviou',   hora:'11:15' },
+    { nome:'Cooperativa Terra Frutífera',      idc:70.8, caixa:48000, rep:58, ms:12, margem:15, func:8,  pd:1, decisao:'enviou',   hora:'09:47' },
+    { nome:'Cooperativa Horizonte Verde',      idc:null, caixa:50000, rep:50, ms:null, margem:null, func:6, pd:0, decisao:'pendente', hora:null },
+    { nome:'Cooperativa Jales Agroindustrial', idc:null, caixa:50000, rep:50, ms:null, margem:null, func:6, pd:0, decisao:'pendente', hora:null },
+    { nome:'Cooperativa Noroeste Paulista',    idc:null, caixa:50000, rep:50, ms:null, margem:null, func:6, pd:0, decisao:'pendente', hora:null },
+    { nome:'Cooperativa Citrus Premium',       idc:null, caixa:50000, rep:50, ms:null, margem:null, func:6, pd:0, decisao:'pendente', hora:null },
+    { nome:'Cooperativa Campo Aberto',         idc:null, caixa:50000, rep:50, ms:null, margem:null, func:6, pd:0, decisao:'pendente', hora:null },
+  ];
+
+  // ── MAPA DE CALOR ──
+  function corCaixa(v) {
+    if(v>=50000) return 'c-verde-forte';
+    if(v>=30000) return 'c-verde-medio';
+    if(v>=10000) return 'c-amarelo';
+    if(v>=0)     return 'c-laranja';
+    return 'c-vermelho';
+  }
+  function corRep(v) {
+    if(v>=70) return 'c-verde-forte';
+    if(v>=50) return 'c-verde-medio';
+    if(v>=30) return 'c-amarelo';
+    return 'c-vermelho';
+  }
+  function corIDC(v) {
+    if(!v) return 'c-cinza';
+    if(v>=75) return 'c-verde-forte';
+    if(v>=55) return 'c-verde-medio';
+    if(v>=35) return 'c-amarelo';
+    return 'c-vermelho';
+  }
+  function corMargem(v) {
+    if(!v) return 'c-cinza';
+    if(v>=20) return 'c-verde-forte';
+    if(v>=10) return 'c-verde-medio';
+    if(v>=0)  return 'c-amarelo';
+    return 'c-vermelho';
+  }
+  function fmt(v, pre='', suf='') { return v!=null ? pre+v.toLocaleString('pt-BR')+suf : '—'; }
+
+  function renderMapa() {
+    const tb = document.getElementById('mapa-tbody');
+    tb.innerHTML = equipes.map((e,i) => `
+      <tr>
+        <td class="col-nome">${i+1}. ${e.nome.replace('Cooperativa ','')}</td>
+        <td><div class="celula ${corIDC(e.idc)}">${e.idc ? e.idc.toFixed(1) : '—'}</div></td>
+        <td><div class="celula ${corCaixa(e.caixa)}">R$${(e.caixa/1000).toFixed(0)}k</div></td>
+        <td><div class="celula ${corRep(e.rep)}">${e.rep}/100</div></td>
+        <td><div class="celula ${e.ms ? 'c-verde-medio' : 'c-cinza'}">${e.ms ? e.ms+'%' : '—'}</div></td>
+        <td><div class="celula ${corMargem(e.margem)}">${e.margem ? e.margem+'%' : '—'}</div></td>
+        <td><div class="celula c-verde-medio">${e.func} func.</div></td>
+        <td><div class="celula ${e.pd ? 'c-verde-forte' : 'c-cinza'}">${e.pd ? e.pd+' ativa' : '—'}</div></td>
+        <td><span class="status-${e.decisao}">${
+          e.decisao==='enviou' ? '✅ '+e.hora :
+          e.decisao==='pendente' ? '⏳ Pendente' : '❌ Atrasada'
+        }</span></td>
+      </tr>
+    `).join('');
+  }
+
+  function renderRanking() {
+    const sorted = [...equipes].sort((a,b) => (b.idc||0)-(a.idc||0));
+    const posClasses = ['pos-1','pos-2','pos-3'];
+    document.getElementById('ranking-tbody').innerHTML = sorted.map((e,i) => `
+      <tr>
+        <td><span class="rank-pos ${posClasses[i]||'pos-n'}">${i+1}</span></td>
+        <td><strong>${e.nome}</strong></td>
+        <td>
+          ${e.idc ? `<strong>${e.idc.toFixed(1)}</strong>
+          <div class="barra-idc-wrap"><div class="barra-idc" style="width:${e.idc}%"></div></div>` : '<span style="color:#aaa">—</span>'}
+        </td>
+        <td>${e.margem ? e.margem+'%' : '—'}</td>
+        <td><div class="celula ${corCaixa(e.caixa)}" style="min-width:50px;font-size:11px;">R$${(e.caixa/1000).toFixed(0)}k</div></td>
+        <td>${e.rep}/100</td>
+        <td>—</td>
+        <td>${e.pd ? '✅' : '—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderDecisoes() {
+    document.getElementById('decisoes-grid').innerHTML = equipes.map(e => `
+      <div class="dec-card">
+        <div class="dec-card-nome">${e.nome.replace('Cooperativa ','')}</div>
+        <span class="dec-card-status status-${e.decisao}">${
+          e.decisao==='enviou' ? '✅ Enviou' : '⏳ Pendente'
+        }</span>
+        <div class="dec-card-hora">${e.hora ? 'às '+e.hora : 'Aguardando...'}</div>
+      </div>
+    `).join('');
+  }
+
+  // ── GAZETA ──
+  function previewGazeta() {
+    const manchete = document.getElementById('gaz-manchete').value || 'Sem manchete definida';
+    const corpo    = document.getElementById('gaz-corpo').value || '—';
+    const rodada   = document.getElementById('gaz-rodada').value;
+    const laranja  = document.getElementById('gaz-preco-laranja').value;
+    const suco     = document.getElementById('gaz-preco-suco').value;
+    const mercado  = document.getElementById('gaz-mercado').value;
+    const cambio   = document.getElementById('gaz-cambio').value;
+    const juros    = document.getElementById('gaz-juros').value;
+    const missao   = document.getElementById('gaz-missao').value;
+
+    document.getElementById('prev-edicao').textContent  = 'Edição · '+rodada;
+    document.getElementById('prev-manchete').textContent = manchete;
+    document.getElementById('prev-corpo').textContent    = corpo;
+    document.getElementById('prev-laranja').textContent  = laranja ? 'R$ '+laranja : '—';
+    document.getElementById('prev-suco').textContent     = suco ? 'R$ '+suco : '—';
+    document.getElementById('prev-mercado').textContent  = mercado ? mercado+' cx' : '—';
+    document.getElementById('prev-cambio').textContent   = cambio ? 'R$ '+cambio : '—';
+    document.getElementById('prev-juros').textContent    = juros ? juros+'%' : '—';
+    document.getElementById('prev-missao').textContent   = missao || '—';
+
+    const prev = document.getElementById('gazeta-preview');
+    prev.classList.add('visivel');
+    prev.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  function publicarGazeta() {
+    previewGazeta();
+    notificar('📰 Gazeta do Campo publicada para todas as equipes!');
+  }
+
+  // ── EVENTOS ──
+  function aplicarEvento(nome, intensidade) {
+    const box = document.getElementById('evento-selecionado');
+    document.getElementById('evento-sel-texto').innerHTML =
+      `<strong>${nome}</strong> — Intensidade: <strong>${intensidade}</strong><br/>
+       <span style="color:var(--texto-suave);font-size:13px;">Este evento será aplicado à Rodada 1 ao confirmar.</span>`;
+    box.style.display = 'block';
+    box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  // ── CONTROLE ──
+  function confirmarFechamento() {
+    if(confirm('Fechar a Rodada 1 agora? Equipes que não enviaram terão as decisões da rodada anterior replicadas.')) {
+      notificar('🔒 Rodada 1 encerrada! Pronta para processamento.');
+    }
+  }
+
+  // ── NAVEGAÇÃO ──
+  function trocarAba(id, el) {
+    document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('ativo'));
+    document.getElementById('aba-'+id).classList.add('ativa');
+    if(el) el.classList.add('ativo');
+  }
+
+  // ── NOTIFICAÇÃO ──
+  function notificar(msg) {
+    const n = document.getElementById('notif');
+    n.textContent = msg;
+    n.classList.add('visivel');
+    setTimeout(() => n.classList.remove('visivel'), 3000);
+  }
+
+  // ── INIT ──
+  renderMapa();
+  renderRanking();
+  renderDecisoes();
+  document.getElementById('gaz-data').valueAsDate = new Date();
+</script>
+</body>
+</html>
