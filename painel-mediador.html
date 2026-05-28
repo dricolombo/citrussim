@@ -934,12 +934,69 @@
   }
 function abrirModalProcessar() {
   if(!confirm('Processar a Rodada 1 agora? Esta ação calculará DRE, caixa, reputação e IDC de todas as 8 cooperativas.')) return;
-  const script = document.createElement('script');
-  script.src = 'processar-rodada.js';
-  script.onload = () => executarProcessamento();
-  document.head.appendChild(script);
+  processarRodadaCompleta();
 }
-  
+  async function processarRodadaCompleta() {
+  const DB = 'https://citrussim-fatec-default-rtdb.firebaseio.com';
+  const EQUIPES = {c1:'Horizonte Verde',c2:'Sol do Campo',c3:'Vale Citrícola',c4:'Jales Agroindustrial',c5:'Terra Frutífera',c6:'Noroeste Paulista',c7:'Citrus Premium',c8:'Campo Aberto'};
+  const P = {precoLaranja:18,descontoAV:0.05,impostos:0.12,ir:0.15,salario:1800,energiaFixa:3000,energiaVar:1.5,contratar:2700,demitir:3600,mercado:6400,repInicial:50,funcInicial:6,caixaInicial:50000};
+  notificar('⚙️ Processando rodada...');
+  try {
+    const decRes = await fetch(`${DB}/torneio/rodadas/r1/decisoes.json`);
+    const decisoes = await decRes.json() || {};
+    const resultados = {};
+    const ranking = [];
+    for(const [id, nome] of Object.entries(EQUIPES)) {
+      const d = decisoes[id] || {};
+      const compra = parseFloat(d.compra)||0;
+      const ms = parseFloat(d.ms)||10;
+      const preco = parseFloat(d.preco)||42;
+      const mkt = parseFloat(d.mkt)||0;
+      const rh = parseInt(d.rh)||0;
+      const pd = parseFloat(d.pd)||0;
+      const pagto = d.pagto||'AV';
+      const treino = d.treino||'NAO';
+      const precoLiq = pagto==='AV'?P.precoLaranja*(1-P.descontoAV):P.precoLaranja;
+      const func = Math.max(1,P.funcInicial+rh);
+      const cap = Math.round(func*100*(treino==='OP'?1.15:1));
+      const prod = Math.min(compra,cap);
+      const vol = Math.min(prod,Math.round(P.mercado*(ms/100)));
+      const recBruta = vol*preco;
+      const imp = recBruta*P.impostos;
+      const cmv = vol*(precoLiq+8.5);
+      const folha = func*P.salario;
+      const custoRH = rh>0?rh*P.contratar:Math.abs(rh)*P.demitir;
+      const despOp = folha+P.energiaFixa+(prod*P.energiaVar)+mkt+pd+custoRH;
+      const ebit = (recBruta-imp-cmv)-despOp;
+      const irVal = ebit>0?ebit*P.ir:0;
+      const lucro = ebit-irVal;
+      const margem = recBruta>0?+((lucro/recBruta)*100).toFixed(2):0;
+      const recebPerc = d.receb==='AV'?1:d.receb==='2x'?0.5:d.receb==='3x'?0.333:0;
+      const caixaFinal = +(P.caixaInicial+(recBruta*recebPerc)-(pagto==='AV'?compra*precoLiq:0)-folha-P.energiaFixa-(prod*P.energiaVar)-mkt-pd-custoRH-imp-irVal).toFixed(2);
+      let rep = P.repInicial;
+      if(vol>=cap*0.9) rep+=5; else if(vol<cap*0.5) rep-=10;
+      if(mkt>=2000) rep+=6; else if(mkt>=500) rep+=3;
+      if(treino&&treino!=='NAO') rep+=4;
+      rep = Math.max(0,Math.min(100,rep));
+      const finS = Math.max(0,Math.min(100,50+margem*2));
+      const saudeS = caixaFinal>=0?Math.min(100,(caixaFinal/P.caixaInicial)*100):0;
+      const estS = cap>0?Math.min(100,(vol/cap)*100):50;
+      const idc = +(finS*0.26+saudeS*0.21+estS*0.17+rep*0.21+(pd>0?60:20)*0.10+50*0.05).toFixed(2);
+      resultados[id] = {id,nome,caixa:caixaFinal,rep,idc,func,ms,vol,margem,processadoEm:new Date().toISOString()};
+      ranking.push({id,nome,idc,posicao:0});
+    }
+    ranking.sort((a,b)=>b.idc-a.idc).forEach((r,i)=>{r.posicao=i+1;resultados[r.id].posicao=i+1;});
+    await fetch(`${DB}/torneio/resultados/r1.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({resultados,processadoEm:new Date().toISOString()})});
+    const equipeRanking = {};
+    ranking.forEach(r=>{equipeRanking[r.id]={...resultados[r.id]};});
+    await fetch(`${DB}/torneio/ranking.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({equipes:equipeRanking,rodada:1,atualizadoEm:new Date().toISOString()})});
+    const top3 = ranking.slice(0,3).map(r=>`${['🥇','🥈','🥉'][r.posicao-1]} ${r.nome}: IDC ${r.idc}`).join('\n');
+    alert(`✅ Rodada 1 processada!\n\nTop 3:\n${top3}\n\nO ranking público foi atualizado!`);
+    location.reload();
+  } catch(e) {
+    alert('❌ Erro ao processar: '+e.message);
+  }
+}
   // ── INIT ──
   renderMapa();
   renderRanking();
