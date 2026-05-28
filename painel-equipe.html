@@ -484,6 +484,7 @@
   </main>
 </div>
 
+<script src="firebase.js"></script>
 <script src="nav.js"></script>
 <script>
 // ══════════════════════════════════════════════════
@@ -599,6 +600,12 @@ function salvarDecisoes() {
   DECISOES.timestamp = agora.toISOString();
   DECISOES.rodada = 1;
   salvarLocal();
+  // Envia ao Firebase
+  const sessao = JSON.parse(localStorage.getItem('citrussim_sessao') || '{}');
+  const coopId = sessao.coopId || 'desconhecido';
+  salvarDecisoesNoBanco(coopId, 1, DECISOES).then(() => {
+    console.log('Decisões enviadas ao banco!');
+  });
   document.getElementById('horario-salvo').textContent = h;
   document.getElementById('msg-salvo').style.display = 'block';
   document.getElementById('msg-salvo').scrollIntoView({behavior:'smooth',block:'nearest'});
