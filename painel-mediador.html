@@ -504,7 +504,7 @@
         <div class="rodada-acoes">
           <button class="btn-acao btn-cinza" onclick="notificar('📣 Lembrete enviado para todas as equipes!')">📣 Lembrar equipes</button>
           <button class="btn-acao btn-vermelho" onclick="confirmarFechamento()">🔒 Fechar rodada</button>
-          <button class="btn-acao btn-laranja" onclick="notificar('⚙️ Processamento iniciado! Aguarde os resultados.')">⚙️ Processar resultados</button>
+          <button class="btn-acao btn-laranja" onclick="abrirModalProcessar()">⚙️ Processar resultados</button>
         </div>
       </div>
 
@@ -932,7 +932,14 @@
     n.classList.add('visivel');
     setTimeout(() => n.classList.remove('visivel'), 3000);
   }
-
+function abrirModalProcessar() {
+  if(!confirm('Processar a Rodada 1 agora? Esta ação calculará DRE, caixa, reputação e IDC de todas as 8 cooperativas.')) return;
+  const script = document.createElement('script');
+  script.src = 'processar-rodada.js';
+  script.onload = () => executarProcessamento();
+  document.head.appendChild(script);
+}
+  
   // ── INIT ──
   renderMapa();
   renderRanking();
