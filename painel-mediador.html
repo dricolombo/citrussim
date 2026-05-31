@@ -934,7 +934,7 @@
   }
 function abrirModalProcessar() {
   if(!confirm('Processar a Rodada 1 agora? Esta ação calculará DRE, caixa, reputação e IDC de todas as 8 cooperativas.')) return;
-  processarRodadaCompleta();
+  processarRodada(1, msg => notificar(msg)).then(() => location.reload());
 }
   async function processarRodadaCompleta() {
   const DB = 'https://citrussim-fatec-default-rtdb.firebaseio.com';
@@ -1007,5 +1007,6 @@ function abrirModalProcessar() {
 <script src="firebase-mapa.js"></script>
 
 <script src="nav.js"></script>
+  <script src="processar-rodada.js"></script>
 </body>
 </html>
