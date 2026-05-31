@@ -264,9 +264,12 @@ async function processarRodada(rodada, callback) {
   callback && callback('Salvando resultados no Firebase...', 85);
 
  // 5. Salvar resultados — cada equipe individualmente (evita truncamento)
-  for (const [id, res] of Object.entries(resultados)) {
-    await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}`, res);
-  }
+ for (const [id, res] of Object.entries(resultados)) {
+  const { dre, fc, ...resBase } = res;
+  await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}`, resBase);
+  await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}/dre`, dre);
+  await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}/fc`, fc);
+}
   await dbEscrever(`torneio/resultados/r${rodada}/meta`, {
     ranking: ranking.map(r => ({ id: r.id, nome: r.nome, idc: r.idc, posicao: r.posicao })),
     processadoEm: new Date().toISOString(),
