@@ -2,7 +2,7 @@
 // Motor de processamento completo de uma rodada
 // Lê decisões do Firebase, calcula DRE/caixa/reputação/IDC e salva resultados
 
-const DB_URL = 'https://citrussim-fatec-default-rtdb.firebaseio.com';
+const DB_PROC = 'https://citrussim-fatec-default-rtdb.firebaseio.com';
 
 // ══════════════════════════════════════════
 // PARÂMETROS DO JOGO
@@ -40,12 +40,12 @@ const EQUIPES_NOMES = {
 // FIREBASE — ler e escrever
 // ══════════════════════════════════════════
 async function dbLer(caminho) {
-  const res = await fetch(`${DB_URL}/${caminho}.json`);
+  const res = await fetch(`${DB_PROC}/${caminho}.json`);
   return await res.json();
 }
 
 async function dbEscrever(caminho, dados) {
-  await fetch(`${DB_URL}/${caminho}.json`, {
+  await fetch(`${DB_PROC}/${caminho}.json`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(dados)
@@ -67,18 +67,14 @@ function calcularReputacao(repAtual, dados) {
   let delta = 0;
   const { vendido, capacidade, mkt, treino, rh, funcAtual } = dados;
 
-  // Entrega sem ruptura
   if (vendido >= capacidade * 0.9) delta += 5;
   else if (vendido < capacidade * 0.5) delta -= 10;
 
-  // Marketing
   const mktMap = { '0':0, '500':3, '2000':6, '5000':10 };
   delta += mktMap[String(mkt)] || 0;
 
-  // Treinamento
   if (treino && treino !== 'NAO') delta += 4;
 
-  // Demissão em massa
   if (rh < 0 && funcAtual > 0 && Math.abs(rh) / funcAtual > 0.30) delta -= 8;
 
   return Math.max(0, Math.min(100, repAtual + delta));
@@ -110,7 +106,6 @@ function calcularIDC(dados) {
 function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
   const { precoLaranja, mercadoTotal } = mercadoInfo;
 
-  // Decisões com defaults
   const compra   = parseFloat(dec.compra)  || 0;
   const pagto    = dec.pagto  || 'AV';
   const ms       = parseFloat(dec.ms)      || 10;
@@ -121,28 +116,21 @@ function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
   const treino   = dec.treino || 'NAO';
   const pd       = dec.pd     || '0';
 
-  // Estado anterior
   const caixaIni = estadoAnterior.caixa || P.caixaInicial;
   const repAnt   = estadoAnterior.rep   || P.repInicial;
   const funcAnt  = estadoAnterior.func  || P.funcInicial;
 
-  // Funcionários e capacidade
   const funcNovo    = Math.max(1, funcAnt + rh);
   const bonusTreino = treino === 'OP' ? 0.15 : 0;
   const capacidade  = Math.round(funcNovo * 100 * (1 + bonusTreino));
 
-  // Compras
-  const precoLiqLaranja = pagto === 'AV'
-    ? precoLaranja * (1 - P.descontoAV)
-    : precoLaranja;
+  const precoLiqLaranja = pagto === 'AV' ? precoLaranja * (1 - P.descontoAV) : precoLaranja;
   const custoCompra = compra * precoLiqLaranja;
 
-  // Produção e vendas
-  const produzido       = Math.min(compra, capacidade);
-  const volumeMercado   = Math.round(mercadoTotal * (ms / 100));
-  const vendido         = Math.min(produzido, volumeMercado);
+  const produzido     = Math.min(compra, capacidade);
+  const volumeMercado = Math.round(mercadoTotal * (ms / 100));
+  const vendido       = Math.min(produzido, volumeMercado);
 
-  // DRE
   const receitaBruta  = vendido * preco;
   const impostos      = receitaBruta * P.impostos;
   const receitaLiq    = receitaBruta - impostos;
@@ -150,7 +138,6 @@ function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
   const cmv           = vendido * custoUnit;
   const lucroBruto    = receitaLiq - cmv;
 
-  // Despesas operacionais
   const folha       = funcNovo * P.salarioBase;
   const energiaVar  = produzido * P.energiaVar;
   const custoRH     = rh > 0 ? rh * P.custoContratar : rh < 0 ? Math.abs(rh) * P.custoDemitir : 0;
@@ -165,7 +152,6 @@ function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
   const lucroLiq    = ebit - ir;
   const margemLiq   = receitaBruta > 0 ? +((lucroLiq / receitaBruta) * 100).toFixed(2) : 0;
 
-  // Fluxo de caixa
   const percRecebAgora = receb === 'AV' ? 1.0 : receb === '2x' ? 0.5 : receb === '3x' ? 0.333 : 0;
   const recebAgora     = +(receitaBruta * percRecebAgora).toFixed(2);
   const pagCompra      = pagto === 'AV' ? custoCompra : 0;
@@ -174,16 +160,19 @@ function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
   const saidaImp       = impostos + ir;
   const caixaFinal     = +(caixaIni + recebAgora - pagCompra - saidaFolha - saidaMktPd - saidaImp).toFixed(2);
 
-  // Reputação e IDC
   const repFinal = calcularReputacao(repAnt, { vendido, capacidade, mkt: mktValor, treino, rh, funcAtual: funcNovo });
   const idc      = calcularIDC({ margemLiq, caixaFinal, vendido, capacidade, repFinal, pd, caixaInicial: caixaIni });
 
   return {
-    id, nome: EQUIPES_NOMES[id],
-    // Indicadores principais
-    caixa: caixaFinal, rep: repFinal, idc, func: funcNovo,
-    ms, vol: vendido, margem: margemLiq,
-    // DRE completa
+    id,
+    nome: EQUIPES_NOMES[id],
+    caixa: caixaFinal,
+    rep: repFinal,
+    idc,
+    func: funcNovo,
+    ms,
+    vol: vendido,
+    margem: margemLiq,
     dre: {
       receitaBruta: +receitaBruta.toFixed(2),
       impostos: +impostos.toFixed(2),
@@ -194,9 +183,8 @@ function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
       ebit: +ebit.toFixed(2),
       ir: +ir.toFixed(2),
       lucroLiq: +lucroLiq.toFixed(2),
-      margemLiq,
+      margemLiq: margemLiq,
     },
-    // Fluxo de caixa
     fc: {
       caixaInicial: caixaIni,
       recebAgora: +recebAgora.toFixed(2),
@@ -204,10 +192,12 @@ function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
       saidaFolha: +saidaFolha.toFixed(2),
       saidaMktPd: +saidaMktPd.toFixed(2),
       saidaImp: +saidaImp.toFixed(2),
-      caixaFinal,
+      caixaFinal: caixaFinal,
     },
-    // Detalhes
-    capacidade, produzido, vendido, estoqueRest,
+    capacidade,
+    produzido,
+    vendido,
+    estoqueRest,
     processadoEm: new Date().toISOString(),
   };
 }
@@ -218,7 +208,6 @@ function processarEquipe(id, dec, estadoAnterior, mercadoInfo) {
 async function processarRodada(rodada, callback) {
   callback && callback('Lendo decisões do Firebase...', 10);
 
-  // 1. Ler decisões
   const decisoes = await dbLer(`torneio/rodadas/r${rodada}/decisoes`);
   if (!decisoes) {
     callback && callback('❌ Nenhuma decisão encontrada!', 0);
@@ -227,7 +216,6 @@ async function processarRodada(rodada, callback) {
 
   callback && callback('Lendo configurações do torneio...', 20);
 
-  // 2. Ler config e estados anteriores
   const config = await dbLer('torneio/config');
   const mercadoInfo = {
     precoLaranja: config?.parametros?.precoLaranja || 18,
@@ -236,11 +224,9 @@ async function processarRodada(rodada, callback) {
 
   callback && callback('Calculando resultados de cada cooperativa...', 40);
 
-  // 3. Processar cada equipe
   const resultados = {};
   const estadosAnteriores = {};
 
-  // Ler estados anteriores (rodada anterior ou inicial)
   for (const id of Object.keys(EQUIPES_NOMES)) {
     if (rodada > 1) {
       const resAnterior = await dbLer(`torneio/resultados/r${rodada-1}/resultados/${id}`);
@@ -249,27 +235,26 @@ async function processarRodada(rodada, callback) {
       estadosAnteriores[id] = { caixa: P.caixaInicial, rep: P.repInicial, func: P.funcInicial };
     }
 
-    // Usar decisões reais ou defaults se não enviou
     const dec = decisoes[id] || {};
     resultados[id] = processarEquipe(id, dec, estadosAnteriores[id], mercadoInfo);
   }
 
   callback && callback('Calculando ranking IDC...', 70);
 
-  // 4. Ordenar por IDC
   const ranking = Object.values(resultados)
     .sort((a, b) => b.idc - a.idc)
     .map((r, i) => ({ ...r, posicao: i + 1 }));
 
   callback && callback('Salvando resultados no Firebase...', 85);
 
- // 5. Salvar resultados — cada equipe individualmente (evita truncamento)
- for (const [id, res] of Object.entries(resultados)) {
-  const { dre, fc, ...resBase } = res;
-  await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}`, resBase);
-  await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}/dre`, dre);
-  await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}/fc`, fc);
-}
+  // 5. Salvar cada equipe individualmente com dre e fc em subcaminhos separados
+  for (const [id, res] of Object.entries(resultados)) {
+    const { dre, fc, ...resBase } = res;
+    await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}`, resBase);
+    await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}/dre`, dre);
+    await dbEscrever(`torneio/resultados/r${rodada}/resultados/${id}/fc`, fc);
+  }
+
   await dbEscrever(`torneio/resultados/r${rodada}/meta`, {
     ranking: ranking.map(r => ({ id: r.id, nome: r.nome, idc: r.idc, posicao: r.posicao })),
     processadoEm: new Date().toISOString(),
@@ -309,7 +294,6 @@ async function processarRodada(rodada, callback) {
 // INTERFACE — botão no painel do mediador
 // ══════════════════════════════════════════
 function inicializarBotaoProcessar() {
-  // Encontra o botão de processar resultados
   const btns = document.querySelectorAll('button');
   btns.forEach(btn => {
     if (btn.textContent.includes('Processar resultados')) {
@@ -319,7 +303,6 @@ function inicializarBotaoProcessar() {
 }
 
 function abrirModalProcessamento() {
-  // Cria modal de confirmação
   const modal = document.createElement('div');
   modal.id = 'modal-processar';
   modal.style.cssText = `
@@ -328,9 +311,9 @@ function abrirModalProcessamento() {
   `;
   modal.innerHTML = `
     <div style="background:white;border-radius:16px;padding:32px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-      <h2 style="font-family:'Playfair Display',serif;font-size:22px;color:#1a4a2e;margin-bottom:8px;">⚙️ Processar Rodada 1</h2>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;color:#1a4a2e;margin-bottom:8px;">⚙️ Processar Rodada</h2>
       <p style="font-size:14px;color:#5a7060;margin-bottom:24px;line-height:1.6;">
-        O sistema vai calcular automaticamente DRE, fluxo de caixa, reputação e IDC de todas as 8 cooperativas com base nas decisões enviadas.
+        O sistema vai calcular automaticamente DRE, fluxo de caixa, reputação e IDC de todas as 8 cooperativas.
       </p>
       <div id="progresso-wrap" style="display:none;margin-bottom:20px;">
         <div id="progresso-texto" style="font-size:13px;color:#2d6b45;margin-bottom:8px;font-weight:600;">Iniciando...</div>
@@ -356,16 +339,22 @@ function abrirModalProcessamento() {
 }
 
 async function executarProcessamento() {
-  const progressoWrap = document.getElementById('progresso-wrap');
+  const progressoWrap  = document.getElementById('progresso-wrap');
   const progressoTexto = document.getElementById('progresso-texto');
   const progressoBarra = document.getElementById('progresso-barra');
-  const botoesModal = document.getElementById('botoes-modal');
+  const botoesModal    = document.getElementById('botoes-modal');
   const resultadoModal = document.getElementById('resultado-modal');
 
   progressoWrap.style.display = 'block';
   botoesModal.style.display = 'none';
 
-  const resultado = await processarRodada(1, (msg, pct) => {
+  // Detectar rodada atual
+  const config = await dbLer('torneio/config');
+  const rodadaAtual = config?.rodadaAtual || 1;
+  // Processar a rodada que está aberta (rodadaAtual ainda não foi incrementada)
+  const rodadaProcessar = rodadaAtual <= 1 ? 1 : rodadaAtual - 1;
+
+  const resultado = await processarRodada(rodadaProcessar, (msg, pct) => {
     progressoTexto.textContent = msg;
     progressoBarra.style.width = pct + '%';
   });
@@ -379,7 +368,7 @@ async function executarProcessamento() {
         ${top3.map((r,i) => `
           <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #dcfce7;font-size:13px;">
             <span>${['🥇','🥈','🥉'][i]}</span>
-            <span style="flex:1;font-weight:600;color:#1a4a2e;">Coop. ${r.nome}</span>
+            <span style="flex:1;font-weight:600;color:#1a4a2e;">${r.nome}</span>
             <span style="font-weight:700;color:#2d6b45;">IDC ${r.idc.toFixed(1)}</span>
           </div>
         `).join('')}
